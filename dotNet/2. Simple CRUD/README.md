@@ -3,26 +3,25 @@
 * Create routes
 
 ### Create controller
-Create controller CustomController by typing in your terminal
+Create controller SimpleController by typing in your terminal
 ```sh
 cd API/Controllers
-touch CustomController.cs
+touch SimpleController.cs
 ```
 ### Create routes
 Paste code below and check results in postman
 ```cs
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CustomController : ControllerBase 
+    public class SimpleController : ControllerBase 
     {
         private static List<int> _data { get; set; }
-        public CustomController(ILogger<CustomController> logger)
+        public SimpleController()
         {
             _data = new List<int>() { 1, 2, 3, 4, 5 };
         }
@@ -35,28 +34,29 @@ namespace API.Controllers
         public ActionResult post(int value)
         {
             _data.Add(value);
-            return Ok(new { message = "simple post done with params args", _data });
+            return Ok(new { message = "simple post done", _data });
         }
 
         [HttpDelete("{index}")]
         public ActionResult delete(int index)
         { 
             _data.RemoveAt(index);
-            return Ok(new { message = "simple delete done with params args", _data });
+            return Ok(new { message = "simple delete done", _data });
         }
 
         [HttpPut("{index}/{value}")]
         public ActionResult put(int index, int value)
         {
             _data.Insert(index, value);
-            return Ok(new { message = "simple put done with params args", _data });
+            return Ok(new { message = "simple put done", _data });
         }
 
         [HttpGet("dynamic-or-object")]
-        public ActionResult<dynamic> __dynamic() => Ok(new { message = "simple endpoint with dynamic type annonymous" });
-        
+        public ActionResult<dynamic> __dynamic() => Ok(new { message = "simple endpoint with dynamic declared args" });
         [HttpGet("static")]
-        public ActionResult<string> __static() => "simple endpoint with static type string";
+        public ActionResult<string> __static() => "simple endpoint with static string declared args";
+
+
 
         //----------------------------------------------------------------
         //
