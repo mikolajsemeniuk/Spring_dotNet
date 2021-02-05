@@ -21,11 +21,9 @@ namespace API.Controllers
     [Route("[controller]")]
     public class CustomController : ControllerBase 
     {
-        private readonly ILogger _logger;
         private static List<int> _data { get; set; }
         public CustomController(ILogger<CustomController> logger)
         {
-            _logger = logger;
             _data = new List<int>() { 1, 2, 3, 4, 5 };
         }
 
@@ -37,21 +35,21 @@ namespace API.Controllers
         public ActionResult post(int value)
         {
             _data.Add(value);
-            return Ok(new { message = "simple post done", _data });
+            return Ok(new { message = "simple post done with params args", _data });
         }
 
         [HttpDelete("{index}")]
         public ActionResult delete(int index)
         { 
             _data.RemoveAt(index);
-            return Ok(new { message = "simple delete done", _data });
+            return Ok(new { message = "simple delete done with params args", _data });
         }
 
         [HttpPut("{index}/{value}")]
         public ActionResult put(int index, int value)
         {
             _data.Insert(index, value);
-            return Ok(new { message = "simple put done", _data });
+            return Ok(new { message = "simple put done with params args", _data });
         }
 
         [HttpGet("dynamic-or-object")]
