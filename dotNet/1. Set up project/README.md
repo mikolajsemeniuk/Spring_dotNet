@@ -1,14 +1,14 @@
 # Set up project
 * Create new project
-Run project
+* Run project
 
 ### Create new project
-create new project by type in terminal
+Create new project by typing in your terminal
 ```sh
 dotnet new webapi -o API
 ```
 ### Run project
-Run project by run in your terminal
+Run project by typing in your terminal
 ```sh
 cd API
 dotnet run
