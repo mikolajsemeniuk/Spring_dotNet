@@ -1,2 +1,2 @@
 # Set up project
-* Visit https://start.spring.io and generate project
+* Visit this [link](https://start.spring.io) and generate project
