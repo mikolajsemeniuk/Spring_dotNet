@@ -26,3 +26,4 @@ dotnet sln add API
 cd API
 dotnet run
 ```
+and go [here](https://localhost:5001/weatherforecast) to see results 
