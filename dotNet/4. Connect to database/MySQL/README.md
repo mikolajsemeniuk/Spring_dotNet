@@ -172,6 +172,7 @@ Let's create configure connection string in `appsettings.Development.json`
     }
   }
 }
+```
 ### Update database
 Let's create first migration add her name and specify folder for output and then update our db
 ```sh
