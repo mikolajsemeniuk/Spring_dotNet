@@ -157,6 +157,21 @@ namespace API
     }
 }
 ```
+### Add ConnectionString
+Let's create configure connection string in `appsettings.Development.json`
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=127.0.0.1;Port=3306;Database=asp;User=root;Password=super_secret_password;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  }
+}
 ### Update database
 Let's create first migration add her name and specify folder for output and then update our db
 ```sh
