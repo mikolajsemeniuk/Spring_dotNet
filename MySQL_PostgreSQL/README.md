@@ -17,6 +17,17 @@ create database asp;
 drop database asp;
 exit/quit
 ```
+
+# MSSQL
+Preconditions:
+* Install docker
+* Install azure data studio
+* Run Docker
+```sh
+docker pull microsoft/mssql-server-linux # install sqlserver
+docker run -d --name MySQLServer -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Semafor4!' -p 1433:1433 microsoft/mssql-server-linux # run sqlserver
+```
+
 # PipEnv
 ```sh
 pipenv shell # create env
