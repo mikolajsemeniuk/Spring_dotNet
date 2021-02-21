@@ -26,7 +26,7 @@ exit/quit
 ```sh
 docker pull microsoft/mssql-server-linux # install sqlserver
 docker run -d --name MySQLServer -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Semafor4!' -p 1433:1433 microsoft/mssql-server-linux # run sqlserver
-docker ps -a # show all containers running
+docker ps # show all containers running
 docker ps -a # show all containers
 docker stop CONTAINER_ID_HERE 
 docker container start CONTAINER_ID_HERE 
