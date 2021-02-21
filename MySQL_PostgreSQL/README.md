@@ -19,7 +19,7 @@ exit/quit
 ```
 
 # MSSQL
-Preconditions:
+#### Preconditions:
 * Install docker
 * Install azure data studio
 * Run Docker
@@ -27,6 +27,19 @@ Preconditions:
 docker pull microsoft/mssql-server-linux # install sqlserver
 docker run -d --name MySQLServer -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Semafor4!' -p 1433:1433 microsoft/mssql-server-linux # run sqlserver
 ```
+#### Core
+```sh
+sudo npm install -g sql-cli # if you do not have it
+mssql -u sa -p your_password
+select name from sys.databases # show all databases
+create database ASP; # create database
+select * from master.INFORMATION_SCHEMA.TABLES;
+USE ASP;
+select * from INFORMATION_SCHEMA.TABLES;
+drop database ASP;
+exit
+```
+
 
 # PipEnv
 ```sh
