@@ -18,7 +18,12 @@ Without tests
 ng g c components/home --skipTests=true
 ```
 #### Route components
-
+In `app-routing.module.ts`
+```ts
+const routes: Routes = [
+  { path: 'info', component: HomeComponent }
+];
+```
 #### Nest components
 In `app.component.html`
 ```html
