@@ -1,16 +1,19 @@
-# Create first Components
-* Basic
-* Shorter
-* Without tests
-#### Basic
+# Components
+* Generate Components
+* Routes components
+* Nest components
+* Pass variables and functions
+* Emit variables and functions
+#### Generate Components
+Basic
 ```sh
 ng generate component components/home
 ```
-#### Shorter
+Shorter
 ```sh
 ng g c components/home
 ```
-#### Without tests
+Without tests
 ```sh
 ng g c components/home --skipTests=true
 ```
