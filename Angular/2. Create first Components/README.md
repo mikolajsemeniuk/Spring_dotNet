@@ -20,6 +20,7 @@ ng g c components/home --skipTests=true
 #### Route components
 
 #### Nest components
+In `app.component.html`
 ```html
 <h1>App component here</h1>
 <!-- Nested component -->
