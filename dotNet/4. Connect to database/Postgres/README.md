@@ -178,6 +178,9 @@ Let's create configure connection string in `appsettings.Development.json`
 Let's create first migration add her name and specify folder for output and then update our db
 ```sh
 dotnet ef migrations add InitialCreate -o Data/Migrations
-dotnet ef database update        
+dotnet ef database update
+
+dotnet ef database update 0 # revert from database
+dotnet ef migrations remove # remove migration
 ```
 ## Then you should see created table in your database, congratulations ;)
