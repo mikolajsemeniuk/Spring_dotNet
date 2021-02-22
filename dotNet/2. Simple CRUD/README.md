@@ -1,98 +1,64 @@
 # Simple CRUD
 * Create controller
-* Create routes
+* Create body
 
 ### Create controller
-Create controller SimpleController by typing in your terminal
-```sh
-cd API/Controllers
-touch SimpleController.cs
-```
-### Create routes
-Paste code below and check results in postman
 ```cs
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-namespace API.Controllers
+namespace DAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class SimpleController : ControllerBase 
+    [Route("users")]
+    public class UsersController : ControllerBase
     {
-        private static List<int> _data { get; set; }
-        public SimpleController()
-        {
-            _data = new List<int>() { 1, 2, 3, 4, 5 };
-        }
+        private readonly ILogger _logger;
+        List<int> _users;
 
+        public UsersController(ILogger<UsersController> logger)
+        {
+            _logger = logger;
+            _users = new List<int>() { 1, 2, 3 };
+        }
 
         [HttpGet]
-        public ActionResult get() => Ok(new { message = "simple get done", _data });
-
-        [HttpPost("{value}")]
-        public ActionResult post(int value)
-        {
-            _data.Add(value);
-            return Ok(new { message = "simple post done", _data });
-        }
-
-        [HttpDelete("{index}")]
-        public ActionResult delete(int index)
-        { 
-            _data.RemoveAt(index);
-            return Ok(new { message = "simple delete done", _data });
-        }
+        public ActionResult get() => Ok(new { message = "get", data = _users });
 
         [HttpPut("{index}/{value}")]
-        public ActionResult put(int index, int value)
+        public ActionResult put([FromRoute] int index, [FromRoute] int value)
         {
-            _data.Insert(index, value);
-            return Ok(new { message = "simple put done", _data });
+            _users.Insert(index, value);            
+            return StatusCode(201, new { message = "put", data = _users });
         }
 
-        [HttpGet("dynamic-or-object")]
-        public ActionResult<dynamic> __dynamic() => Ok(new { message = "simple endpoint with dynamic declared args" });
-        [HttpGet("static")]
-        public ActionResult<string> __static() => "simple endpoint with static string declared args";
-
-
-
-        //----------------------------------------------------------------
-        //
-        // custom methods
-        //
-        //----------------------------------------------------------------
-        [HttpGet("custom")]
-        public ActionResult Custom()
+        [HttpPatch]
+        public ActionResult patch([FromQuery] int index, [FromQuery] int value)
         {
-            return StatusCode(303, new { response = "custom" });
+            _users.Insert(index, value);
+            return StatusCode(201, new { message = "put", data = _users });
         }
 
-        [HttpGet("server-error")]
-        public ActionResult ServerError()
+        [HttpPost]
+        public ActionResult post([FromBody] SampleBody sampleBody)
         {
-            return StatusCode(500, new { Id = 123, Name = "computer says no!" });
+            var s = Request.Headers["Content-Type"];
+            _logger.LogInformation("idx: " + sampleBody.index + " value: " + sampleBody.value + ", s: " + s);
+            _users.Insert(sampleBody.index, sampleBody.value);
+            return StatusCode(201, new { message = "post", data = _users });
         }
-
-        [HttpGet("bad-request")]
-        public ActionResult<string> GetBadRequest()
-        {
-            return BadRequest(new { response = "this was not a good request" });
-        }
-
-        [HttpGet("not-found")]
-        public ActionResult<string> GetNotFound()
-        {
-            return NotFound(new { response = "this is not the page you are looking for" });
-        }
-
-        [HttpGet("not-pass")]
-        public ActionResult<string> GetException()
-        {
-            return Unauthorized(new { response = "you shall not pass"});
-        }
-
+    }
+}
+```
+### Create body
+```cs
+namespace DAPI.Controllers
+{
+    public class SampleBody
+    {
+        public int index { get; set; }
+        public int value { get; set; }
     }
 }
 ```
