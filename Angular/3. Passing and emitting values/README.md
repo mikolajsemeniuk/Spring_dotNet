@@ -115,7 +115,8 @@ export class SecondComponent implements OnInit {
 
   @Output() firstFuncPassed = new EventEmitter<number>()
 
-  secondFunc(event: number) {
+  // use question mark to make `event` optional
+  secondFunc(event?: number) {
     // if arg `event` is not null use `event` else use `2`
     this.firstFuncPassed.emit(event || 2)
   }
