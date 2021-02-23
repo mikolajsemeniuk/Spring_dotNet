@@ -2,7 +2,7 @@
 * Passing values
 * Emitting values
 * Chain passing and emitting
-#### Passing values
+### Passing values
 in `first.component.ts`
 ```ts
 import { Component, OnInit } from '@angular/core';
@@ -57,7 +57,7 @@ in `second.component.html`
 ```html
 <p>second works: {{ firstVarPassed }}</p>
 ```
-#### Emitting values
+### Emitting values
 in `first.component.ts`
 ```ts
 import { Component, OnInit } from '@angular/core';
@@ -126,7 +126,7 @@ in `second.component.html`
 <p>second works: {{ firstVarPassed }}</p>
 <button type="button" (click)="secondFunc()">maybe click me</button>
 ```
-#### Chain passing and emitting
+### Chain passing and emitting
 in `first.component.ts`
 ```ts
 import { Component, OnInit } from '@angular/core';
