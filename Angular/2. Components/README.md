@@ -2,8 +2,6 @@
 * Generate Components
 * Routes components
 * Nest components
-* Pass variables and functions
-* Emit variables and functions
 #### Generate Components
 Basic
 ```sh
