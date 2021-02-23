@@ -91,5 +91,32 @@ in `first.component.html`
     
     </app-second>
 </div>
+```
+in `second.component.ts`
+```ts
+import { Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
+@Component({
+  selector: 'app-second',
+  templateUrl: './second.component.html',
+  styleUrls: ['./second.component.scss']
+})
+export class SecondComponent implements OnInit {
+
+  @Input()
+  firstVarPassed: number;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  @Output() firstFuncPassed = new EventEmitter<number>()
+
+  secondFunc(event: number) {
+    // if arg `event` is not null use `event` else use `2`
+    this.firstFuncPassed.emit(event || 2)
+  }
+}
 ```
