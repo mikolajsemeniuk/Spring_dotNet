@@ -31,4 +31,28 @@ in `first.component.html`
     </app-second>
 </div>
 ```
-in `first.component.html`
+in `second.component.ts`
+```ts
+import { Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-second',
+  templateUrl: './second.component.html',
+  styleUrls: ['./second.component.scss']
+})
+export class SecondComponent implements OnInit {
+
+  @Input()
+  firstVarPassed: number;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+}
+```
+in `second.component.html`
+```html
+<p>second works: {{ firstVarPassed }}</p>
+```
