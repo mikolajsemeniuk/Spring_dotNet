@@ -1,6 +1,6 @@
 # Http requests
 * Import module
-* DTO
+* Declare models
 * Send requests
 
 ### Import module
