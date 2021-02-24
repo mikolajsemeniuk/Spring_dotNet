@@ -40,3 +40,4 @@ import { WorkshopComponent } from './components/workshop/workshop.component';
 })
 export class AppModule { }
 ```
+### Declare models
