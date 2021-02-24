@@ -115,5 +115,5 @@ in `workshop.component.html`
 <ng-template #else1>
     else
 </ng-template>
-
 ```
+### Loops
