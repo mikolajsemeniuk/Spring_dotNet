@@ -117,3 +117,31 @@ in `workshop.component.html`
 </ng-template>
 ```
 ### Loops
+in `workshop.component.ts`
+```ts
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-workshop',
+  templateUrl: './workshop.component.html',
+  styleUrls: ['./workshop.component.scss']
+})
+export class WorkshopComponent implements OnInit {
+
+  items: string[] = ['first', 'second', 'third']
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+```
+in `workshop.component.html`
+```html
+<ul>
+    <li *ngFor="let item of items; let i = index" [attr.data-index]="i">
+        index: {{ i }}, item: {{ item }}
+    </li>
+</ul>
+```
