@@ -41,9 +41,19 @@ import { WorkshopComponent } from './components/workshop/workshop.component';
 export class AppModule { }
 ```
 ### Declare models
+Create model
 ```sh
 # with tests
 ng generate class models/Post --type=model
 # without tests
 ng generate class models/Post --type=model --skipTests=true
+```
+`Post` body in `models/post.model.ts`
+```ts
+export class Post {
+    id: number
+    title: string
+    body: string
+    userId: number
+}
 ```
