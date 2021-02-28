@@ -1,6 +1,7 @@
 # Http requests
 * Import module
-* Declare models
+* Create model
+* Create service
 * Send requests
 
 ### Import module
@@ -40,7 +41,7 @@ import { WorkshopComponent } from './components/workshop/workshop.component';
 })
 export class AppModule { }
 ```
-### Declare models
+### Create model
 Create model
 ```sh
 # with tests
@@ -56,4 +57,9 @@ export class Post {
     body: string
     userId: number
 }
+```
+### Create service
+
+```sh
+ng g s services/crud --skipTests=true
 ```
