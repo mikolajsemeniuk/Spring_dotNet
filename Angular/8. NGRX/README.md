@@ -26,6 +26,7 @@ import {
 import { environment } from '../../environments/environment';
 
 
+// Local State declaration and implementation
 export interface numbersState {
   values: number[],
   isVisible: boolean
@@ -35,6 +36,8 @@ const initialState: numbersState = {
   isVisible: true
 }
 
+
+// Actions and Reducer
 export const changeStatus = createAction(
   "[State] Change Status"
 )
@@ -78,7 +81,7 @@ export const numbersReducer = createReducer(
   })
 )
 
-
+// Global State declaration and ActionReducerMap implementation
 export interface State {
   numbers: numbersState
 }
@@ -86,7 +89,7 @@ export const reducers: ActionReducerMap<State> = {
   numbers: numbersReducer
 };
 
-
+// Getters
 const getNumbersState = createFeatureSelector<numbersState>('numbers') // feature getter
 export const getValues = createSelector( // properties selector
   getNumbersState,
@@ -98,6 +101,7 @@ export const getIsVisible = createSelector( // properties selector
 )
 
 
+// Additional
 export const metaReducers: MetaReducer<State>[] = !environment.production ? [] : [];
 ```
 in `src/app/app.component.ts`
