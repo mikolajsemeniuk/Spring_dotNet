@@ -1,6 +1,8 @@
 # NGRX
 * Install store and devtools
 * Simple store
+* Complex store
+* Lazy module store
 
 ### Install store and devtools
 ```sh
