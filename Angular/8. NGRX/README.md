@@ -81,6 +81,7 @@ export const numbersReducer = createReducer(
   })
 )
 
+
 // Global State declaration and ActionReducerMap implementation
 export interface State {
   numbers: numbersState
@@ -88,6 +89,7 @@ export interface State {
 export const reducers: ActionReducerMap<State> = {
   numbers: numbersReducer
 };
+
 
 // Getters
 const getNumbersState = createFeatureSelector<numbersState>('numbers') // feature getter
