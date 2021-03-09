@@ -161,7 +161,7 @@ Let's create configure connection string in `appsettings.Development.json`
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=127.0.0.1;Database=project;User Id=sa;Password=super_secret_password"
+    "DefaultConnection": "Server=127.0.0.1;Database=asp;User Id=sa;Password=super_secret_password"
   },
   "Logging": {
     "LogLevel": {
