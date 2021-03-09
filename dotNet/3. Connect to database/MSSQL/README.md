@@ -1,6 +1,6 @@
 # Connect to MSSQL
 1. Create first entity
-1. Install `Microsoft.EntityFrameworkCore.Sqlite`
+1. Install `Microsoft.EntityFrameworkCore.SqlServer`
 1. Install `Microsoft.EntityFrameworkCore.Design`
 1. Install `dotnet-ef` **(if you do not have it)**
 1. Create Class derives from DbContext
@@ -38,7 +38,7 @@ After completed instalation your API.csproj should look like below:
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" NoWarn="NU1605"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0"/>
   </ItemGroup>
 </Project>
 ```
@@ -54,7 +54,7 @@ After completed instalation your API.csproj should look like below:
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" NoWarn="NU1605"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0"/>
   </ItemGroup>
 </Project>
@@ -123,7 +123,7 @@ namespace API
         {
             services.AddDbContext<DataContext>(options =>
             {
-                options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(_config.GetConnectionString("DefaultConnection"));
             });
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -161,7 +161,7 @@ Let's create configure connection string in `appsettings.Development.json`
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data source=datingapp.db"
+    "DefaultConnection": "Server=127.0.0.1;Database=project;User Id=sa;Password=super_secret_password"
   },
   "Logging": {
     "LogLevel": {
