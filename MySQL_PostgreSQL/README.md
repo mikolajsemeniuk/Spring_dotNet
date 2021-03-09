@@ -37,7 +37,7 @@ sudo npm install -g sql-cli # if you do not have it
 mssql -u sa -p your_password
 select name from sys.databases # show all databases
 create database ASP; # create database
-select * from master.INFORMATION_SCHEMA.TABLES;
+select * from master.INFORMATION_SCHEMA.TABLES; # show all tables from master
 USE ASP;
 select * from INFORMATION_SCHEMA.TABLES;
 drop database ASP;
