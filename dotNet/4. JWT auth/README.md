@@ -68,10 +68,120 @@ namespace test.DTO
 ### Register endpoint
 in `Controllers/AuthController.cs`
 ```cs
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using test.Data;
+using test.Entities;
+using test.DTO;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
+namespace test.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
+    {
+        private readonly DataContext _context;
+
+        public AuthController(DataContext context)
+        {
+            _context = context;
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<AppUser>> Register([FromBody] RegisterDto registerDto)
+        {
+            if (await _context.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
+                return BadRequest("Username is taken");
+
+            using var hmac = new HMACSHA512();
+
+            var user = new AppUser
+            {
+                UserName = registerDto.username.ToLower(),
+                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.password)),
+                PasswordSalt = hmac.Key
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+    }
+}
 ```
 ### Login endpoint
 in `Controllers/AuthController.cs`
 ```cs
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using test.Data;
+using test.Entities;
+using test.DTO;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
+namespace test.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
+    {
+        private readonly DataContext _context;
+
+        public AuthController(DataContext context)
+        {
+            _context = context;
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<AppUser>> Register([FromBody] RegisterDto registerDto)
+        {
+            if (await _context.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
+                return BadRequest("Username is taken");
+
+            using var hmac = new HMACSHA512();
+
+            var user = new AppUser
+            {
+                UserName = registerDto.username.ToLower(),
+                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.password)),
+                PasswordSalt = hmac.Key
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<AppUser>> Login([FromBody] LoginDto loginDto)
+        {
+            var user = await _context
+                .Users
+                .SingleOrDefaultAsync(
+                    x => x.UserName == loginDto.username);
+
+            if (user == null)
+                return Unauthorized("Invalid Username");
+
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.password));
+
+            if(!computedHash.SequenceEqual(user.PasswordHash))
+                return Unauthorized("Invalid Password");
+
+            return user;                
+
+        }
+    }
+}
 ```
