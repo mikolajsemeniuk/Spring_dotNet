@@ -146,8 +146,21 @@ namespace test.Services
     }
 }
 ```
-in `Interfaces/ITokenService.cs`
-```cs
+in `appsettings.Development.json`
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=127.0.0.1;Database=test;User Id=sa;Password=super_secret_password"
+  },
+  "TokenKey": "this should be 32 random characters string",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  }
+}
 
 ```
 ### Register endpoint
