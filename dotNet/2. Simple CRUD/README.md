@@ -52,6 +52,7 @@ namespace DAPI.Controllers
 }
 ```
 ### Create body
+in `DTO/Samplebody.cs`
 ```cs
 namespace DAPI.Controllers
 {
