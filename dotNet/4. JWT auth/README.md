@@ -1,5 +1,6 @@
 # JWT auth
 * Update entity
+* Create migration
 * Generate DTOs
 * Register endpoint
 * Login endpoint
@@ -18,6 +19,11 @@ namespace test.Entities
         public byte[] PasswordSalt { get; set; }
     }
 }
+```
+### Create migration
+```sh
+dotnet ef migrations add UserPasswordAdded
+dotnet ef database update
 ```
 ### Generate DTOs
 in `DTO/RegisterDto.cs`
