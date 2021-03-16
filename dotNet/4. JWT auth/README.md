@@ -2,6 +2,8 @@
 * Update entity
 * Create migration
 * Generate DTOs
+* Add `System.IdentityModel.Tokens.Jwt` package
+* Implement JWT token
 * Register endpoint
 * Login endpoint
 
@@ -64,6 +66,44 @@ namespace test.DTO
         public string token { get; set; }
     }
 }
+```
+### Add `System.IdentityModel.Tokens.Jwt` package
+in `test.csproj`
+```csproj
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" NoWarn="NU1605"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.9.0"/>
+  </ItemGroup>
+</Project>
+```
+### Implement JWT token
+in `Interfaces/ITokenService.cs`
+```cs
+using test.Entities;
+
+namespace test.Interfaces
+{
+    public interface ITokenService
+    {
+        string CreateToken(AppUser user);
+    }
+}
+```
+in `Services/TokenService.cs`
+```cs
+
+```
+in `Interfaces/ITokenService.cs`
+```cs
+
 ```
 ### Register endpoint
 in `Controllers/AuthController.cs`
