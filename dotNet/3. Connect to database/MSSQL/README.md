@@ -26,7 +26,7 @@ namespace API.Entities
     }
 }
 ```
-### Install `Microsoft.EntityFrameworkCore.Sqlite`
+### Install `Microsoft.EntityFrameworkCore.SqlServer`
 you should be able to install this package via nuget from vs/vscode or nuget gallery in vscode by pressing `cmd + shift + p` and then `NuGet Package Manager: Add Package`.
 After completed instalation your API.csproj should look like below:
 ```csproj
