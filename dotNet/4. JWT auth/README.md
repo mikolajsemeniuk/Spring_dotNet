@@ -1,6 +1,8 @@
 # JWT auth
 * Update entity
 * Generate DTOs
+* Register endpoint
+* Login endpoint
 
 
 ### Update entity
