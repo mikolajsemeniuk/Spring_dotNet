@@ -6,6 +6,7 @@
 * Implement JWT token
 * Add JWT service
 * Register/Login endpoint
+* Authentication middleware
 
 ### Update entity
 Update `Data/AppUser.cs`
@@ -307,6 +308,103 @@ namespace test.Controllers
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user)
             };
+        }
+    }
+}
+```
+### Authentication middleware
+** If you do not have `Microsoft.AspNetCore.Authentication.JwtBearer` package in your `test.csproj` you have to add it first but in `.NET5.0` and higher it should be by default
+```csproj
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" NoWarn="NU1605"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.9.0"/>
+  </ItemGroup>
+</Project>
+```
+to use auth schema update `Startup.cs`
+```cs
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using test.Data;
+using test.Services;
+using test.Interfaces;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // ADD THIS TO ENABLE JwtBearerDefaults
+
+namespace test
+{
+    public class Startup
+    {
+        private readonly IConfiguration _config;
+        public Startup(IConfiguration config)
+        {
+            _config = config;
+        }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ITokenService, TokenService>(); // ADD THIS TO ENABLE TOKEN SERVICE
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer(_config.GetConnectionString("DefaultConnection"));
+            });
+            
+            // ADD THIS
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "test", Version = "v1" });
+            });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "test v1"));
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthentication(); // ADD THIS, IMPORTANT ORDER MATTERS
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
