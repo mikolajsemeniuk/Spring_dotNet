@@ -5,9 +5,7 @@
 * Add `System.IdentityModel.Tokens.Jwt` package
 * Implement JWT token
 * Add JWT service
-* Register endpoint
-* Login endpoint
-
+* Register/Login endpoint
 
 ### Update entity
 Update `Data/AppUser.cs`
@@ -232,63 +230,7 @@ namespace test
     }
 }
 ```
-### Register endpoint
-in `Controllers/AuthController.cs`
-```cs
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using test.Data;
-using test.Entities;
-using test.DTO;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using test.Interfaces;
-
-namespace test.Controllers
-{
-    [ApiController]
-    [Route("[controller]")]
-    public class AuthController : ControllerBase
-    {
-        private readonly ITokenService _tokenService;
-        private readonly DataContext _context;
-
-        public AuthController(DataContext context, ITokenService tokenService)
-        {
-            _tokenService = tokenService;
-            _context = context;
-        }
-
-        [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
-        {
-            if (await _context.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
-                return BadRequest("Username is taken");
-
-            using var hmac = new HMACSHA512();
-
-            var user = new AppUser
-            {
-                UserName = registerDto.username.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.password)),
-                PasswordSalt = hmac.Key
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return new UserDto
-            {
-                Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
-            };
-        }
-    }
-}
-```
-### Login endpoint
+### Register/Login endpoint
 in `Controllers/AuthController.cs`
 ```cs
 using System.Security.Cryptography;
