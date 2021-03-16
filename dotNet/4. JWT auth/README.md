@@ -162,7 +162,6 @@ in `appsettings.Development.json`
     }
   }
 }
-
 ```
 ### Add JWT service
 ```cs
@@ -232,7 +231,6 @@ namespace test
         }
     }
 }
-
 ```
 ### Register endpoint
 in `Controllers/AuthController.cs`
@@ -246,6 +244,7 @@ using test.DTO;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using test.Interfaces;
 
 namespace test.Controllers
 {
@@ -253,15 +252,17 @@ namespace test.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly ITokenService _tokenService;
         private readonly DataContext _context;
 
-        public AuthController(DataContext context)
+        public AuthController(DataContext context, ITokenService tokenService)
         {
+            _tokenService = tokenService;
             _context = context;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AppUser>> Register([FromBody] RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
             if (await _context.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
                 return BadRequest("Username is taken");
@@ -278,7 +279,11 @@ namespace test.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
         }
     }
 }
@@ -295,6 +300,7 @@ using test.DTO;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using test.Interfaces;
 
 namespace test.Controllers
 {
@@ -302,15 +308,17 @@ namespace test.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly ITokenService _tokenService;
         private readonly DataContext _context;
 
-        public AuthController(DataContext context)
+        public AuthController(DataContext context, ITokenService tokenService)
         {
+            _tokenService = tokenService;
             _context = context;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AppUser>> Register([FromBody] RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
             if (await _context.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
                 return BadRequest("Username is taken");
@@ -327,11 +335,15 @@ namespace test.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AppUser>> Login([FromBody] LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
             var user = await _context
                 .Users
@@ -348,8 +360,11 @@ namespace test.Controllers
             if(!computedHash.SequenceEqual(user.PasswordHash))
                 return Unauthorized("Invalid Password");
 
-            return user;                
-
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
         }
     }
 }
