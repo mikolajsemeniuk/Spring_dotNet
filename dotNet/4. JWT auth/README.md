@@ -59,3 +59,13 @@ namespace test.DTO
     }
 }
 ```
+### Register endpoint
+in `Controllers/AuthController.cs`
+```cs
+
+```
+### Login endpoint
+in `Controllers/AuthController.cs`
+```cs
+
+```
