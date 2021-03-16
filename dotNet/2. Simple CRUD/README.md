@@ -3,6 +3,7 @@
 * Create body
 
 ### Create controller
+in `Controllers/UsersController.cs`
 ```cs
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
