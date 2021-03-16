@@ -363,6 +363,7 @@ namespace test
             {
                 options.UseSqlServer(_config.GetConnectionString("DefaultConnection"));
             });
+            // services.AddCors();
             
             // ADD THIS
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -396,6 +397,8 @@ namespace test
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            // app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 
             app.UseAuthentication(); // ADD THIS, IMPORTANT ORDER MATTERS
 
@@ -405,6 +408,102 @@ namespace test
             {
                 endpoints.MapControllers();
             });
+        }
+    }
+}
+```
+Update `Controllers/AuthController.cs` to apply auth middleware
+** to check if everything work add `Authorization` Header with `Bearer {{ token }}` value to get authenticated
+```cs
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using test.Data;
+using test.Entities;
+using test.DTO;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using test.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+
+namespace test.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
+    {
+        private readonly ITokenService _tokenService;
+        private readonly DataContext _context;
+
+        public AuthController(DataContext context, ITokenService tokenService)
+        {
+            _tokenService = tokenService;
+            _context = context;
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
+        {
+            if (await _context.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
+                return BadRequest("Username is taken");
+
+            using var hmac = new HMACSHA512();
+
+            var user = new AppUser
+            {
+                UserName = registerDto.username.ToLower(),
+                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.password)),
+                PasswordSalt = hmac.Key
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
+        {
+            var user = await _context
+                .Users
+                .SingleOrDefaultAsync(
+                    x => x.UserName == loginDto.username);
+
+            if (user == null)
+                return Unauthorized("Invalid Username");
+
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.password));
+
+            if(!computedHash.SequenceEqual(user.PasswordHash))
+                return Unauthorized("Invalid Password");
+
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
+        }
+
+        [Authorize]
+        [HttpGet("auth")]
+        public string Authorize()
+        {
+            return "only users with token could see this";
+        }
+
+        [AllowAnonymous]
+        [HttpGet("unauth")]
+        public string Annonymous()
+        {
+            return "users and annonymous could see this";
         }
     }
 }
