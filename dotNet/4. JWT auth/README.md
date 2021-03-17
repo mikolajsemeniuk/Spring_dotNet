@@ -62,8 +62,8 @@ namespace test.DTO
 {
     public class UserDto
     {
-        public string username { get; set; }
-        public string token { get; set; }
+        public string Username { get; set; }
+        public string Token { get; set; }
     }
 }
 ```
