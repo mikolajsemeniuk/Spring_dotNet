@@ -195,7 +195,7 @@ namespace test
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ITokenService, TokenService>(); // ADD THIS TO ENABLE TOKEN SERVICE
+            services.AddScoped<ITokenService, TokenService>(); // ADD THIS TO ENABLE TOKEN SERVICE AND REMEMBER TO IMPLEMENET INTERFACE TO SERVICE!
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlServer(_config.GetConnectionString("DefaultConnection"));
