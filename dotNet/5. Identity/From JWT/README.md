@@ -5,6 +5,7 @@
 * Configure services
 * Modify Service
 * Add policy
+* Add Roles
 
 ### Add package
 Add `Microsoft.AspNetCore.Identity.EntityFrameworkCore` to your `csproj` if you do not have it
@@ -372,6 +373,95 @@ namespace api
                 endpoints.MapControllers();
             });
         }
+    }
+}
+```
+### Add Roles
+in `Data/Seed.cs`
+```cs
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using api.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace api.Data
+{
+    public class Seed
+    {
+        public static async Task InitSeed(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
+        {
+            if (await userManager.Users.AnyAsync())
+                return;
+
+            var roles = new List<AppRole>
+            {
+                new AppRole{ Name = "Admin" },
+                new AppRole{ Name = "Moderator" },
+                new AppRole{ Name = "Member" }
+            };
+
+            foreach (var role in roles)
+                await roleManager.CreateAsync(role);
+
+            var user = new AppUser
+            {
+                UserName = "Admin",
+                CreatedAt = DateTime.Now
+            };
+
+            await userManager.CreateAsync(user, "Semafor4!");
+            await userManager.AddToRolesAsync(user, new[] { "Admin", "Moderator" });
+        }
+    }
+}
+```
+in `Program.cs`
+```cs
+using System;
+using System.Threading.Tasks;
+using api.Data;
+using api.Entities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace api
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            var host = CreateHostBuilder(args).Build();
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<DataContext>();
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+                await context.Database.MigrateAsync();
+                await Seed.InitSeed(userManager, roleManager);
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<Logger<Program>>();
+                logger.LogError($"error: {ex}");
+            }
+
+            await host.RunAsync();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
 ```
