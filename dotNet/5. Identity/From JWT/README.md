@@ -137,7 +137,6 @@ namespace api
             _config = config;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ITokenService, TokenService>();
@@ -145,9 +144,11 @@ namespace api
             {
                 options.UseSqlServer(_config.GetConnectionString("DefaultConnection"));
             });
+            
             // ADD THIS TO SERVICE CLASS
             services.AddIdentityCore<AppUser>(opt => 
             {
+                // specify options below
                 opt.Password.RequireNonAlphanumeric = false;
             })
             .AddRoles<AppRole>()
@@ -173,7 +174,6 @@ namespace api
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
