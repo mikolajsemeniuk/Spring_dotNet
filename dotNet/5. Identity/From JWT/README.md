@@ -3,6 +3,8 @@
 * Update entities
 * Update `DataContext` class
 * Configure services
+* Modify Service
+* Add policy
 
 ### Add package
 Add `Microsoft.AspNetCore.Identity.EntityFrameworkCore` to your `csproj` if you do not have it
@@ -188,6 +190,180 @@ namespace api
             app.UseRouting();
 
             app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+    }
+}
+```
+### Modify Service
+in `Interfaces/ITokenService.cs`
+```cs
+using System.Threading.Tasks;
+using api.Entities;
+
+namespace api.Interfaces
+{
+    public interface ITokenService
+    {
+        Task<string> CreateToken(AppUser user);
+    }
+}
+```
+in `Services/TokenService.cs`
+```cs
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using api.Entities;
+using api.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+
+namespace api.Services
+{
+    public class TokenService : ITokenService
+    {
+        private readonly SymmetricSecurityKey _key;
+        private readonly UserManager<AppUser> _userManager;
+
+        // 4.
+        public TokenService(IConfiguration config, UserManager<AppUser> userManager)
+        {
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+            _userManager = userManager;
+        }
+
+        public async Task<string> CreateToken(AppUser user)
+        {
+            // 4.
+            var claims = new List<Claim>()
+            {
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
+
+            };
+
+            // 4.
+            var roles = await _userManager.GetRolesAsync(user);
+
+            // 
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            // create signingCredentials
+            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescription = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(7),
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var token = tokenHandler.CreateToken(tokenDescription);
+
+            return tokenHandler.WriteToken(token);
+        }
+    }
+}
+```
+### Add policy
+in `Startup.cs`
+```cs
+
+using System.Text;
+using api.Data;
+using api.Entities;
+using api.Interfaces;
+using api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+namespace api
+{
+    public class Startup
+    {
+        private readonly IConfiguration _config;
+        public Startup(IConfiguration config)
+        {
+            _config = config;
+        }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer(_config.GetConnectionString("DefaultConnection"));
+            });
+            services.AddIdentityCore<AppUser>(opt => 
+            {
+                opt.Password.RequireNonAlphanumeric = false;
+            })
+            .AddRoles<AppRole>()
+            .AddRoleManager<RoleManager<AppRole>>()
+            .AddSignInManager<SignInManager<AppUser>>()
+            .AddRoleValidator<RoleValidator<AppRole>>()
+            .AddEntityFrameworkStores<DataContext>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+            // ADD THIS
+            services.AddAuthorization(opt => {
+                opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin", "Moderator"));
+                opt.AddPolicy("RequireModerateRole", policy => policy.RequireRole("Moderator"));
+            });
+            services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "test", Version = "v1" });
+            });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "test v1"));
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthentication(); // ADD THIS, IMPORTANT ORDER MATTERS
 
             app.UseAuthorization();
 
