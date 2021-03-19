@@ -1,4 +1,5 @@
-# Identity (From JWT)
+# Identity
+if you would like to do it from scratch just make sure you have `System.IdentityModel.Tokens.Jwt` installed
 * Add package
 * Update entities
 * Update `DataContext` class
