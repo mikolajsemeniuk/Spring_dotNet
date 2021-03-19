@@ -8,6 +8,7 @@
 * Make migration
 * Add policy
 * Add Roles
+* UpdateController
 
 ### Add package
 Add `Microsoft.AspNetCore.Identity.EntityFrameworkCore` to your `csproj` if you do not have it
