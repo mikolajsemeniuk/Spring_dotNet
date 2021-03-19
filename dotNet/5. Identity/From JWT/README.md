@@ -621,6 +621,10 @@ namespace test.Controllers
             var result = await _userManager.CreateAsync(user, registerDto.password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
+                
+            var roleResult = await _userManager.AddToRolesAsync(user, new[] { "Member" });
+            if (!roleResult.Succeeded)
+                return BadRequest(result.Errors);
 
             return new UserDto
             {
