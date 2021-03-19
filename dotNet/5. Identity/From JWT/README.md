@@ -505,14 +505,24 @@ namespace api.Data
             foreach (var role in roles)
                 await roleManager.CreateAsync(role);
 
-            var user = new AppUser
+            var adminUser = new AppUser
             {
                 UserName = "Admin",
                 CreatedAt = DateTime.Now
             };
 
-            await userManager.CreateAsync(user, "Semafor4!");
-            await userManager.AddToRolesAsync(user, new[] { "Admin", "Moderator" });
+            await userManager.CreateAsync(adminUser, "Semafor4!");
+            await userManager.AddToRolesAsync(adminUser, new[] { "Admin", "Moderator" });
+
+
+            var moderatorUser = new AppUser
+            {
+                UserName = "Moderator",
+                CreatedAt = DateTime.Now
+            };
+
+            await userManager.CreateAsync(moderatorUser, "Semafor4!");
+            await userManager.AddToRoleAsync(moderatorUser, "Moderator");
         }
     }
 }
@@ -562,6 +572,113 @@ namespace api
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+    }
+}
+```
+### UpdateController
+in `Controllers/AuthController.cs`
+```cs
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using test.DTO;
+using test.Entities;
+using test.Interfaces;
+
+namespace test.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
+    {
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly ITokenService _tokenService;
+
+        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _tokenService = tokenService;
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
+                return BadRequest("Username is taken");
+
+            var user = new AppUser
+            {
+                UserName = registerDto.username.ToLower(),
+                CreatedAt = DateTime.Now
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
+        {
+            var user = await _userManager
+                .Users
+                .SingleOrDefaultAsync(
+                    x => x.UserName == loginDto.username);
+
+            if (user == null)
+                return Unauthorized("Invalid Username");
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.password, false);
+
+            if (!result.Succeeded)
+                return Unauthorized("Invalid password");
+
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+
+        [Authorize]
+        [HttpGet("auth")]
+        public string Authorize()
+        {
+            return "only users with token could see this";
+        }
+
+        [AllowAnonymous]
+        [HttpGet("unauth")]
+        public string Annonymous()
+        {
+            return "users and annonymous could see this";
+        }
+        // ADD THIS
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpGet]
+        public string AuthorizeWithAdminPolicy()
+        {
+            return "only admin could see this";
+        }
+
+        // ADD THIS
+        [Authorize(Policy = "RequireModerateRole")]
+        [HttpGet]
+        public string AuthorizeWithModeratorPolicy()
+        {
+            return "only moderator could see this";
+        }
     }
 }
 ```
