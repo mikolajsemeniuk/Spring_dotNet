@@ -4,6 +4,8 @@
 * Update `DataContext` class
 * Configure services
 * Modify Service
+* Modify Controller
+* Make migration
 * Add policy
 * Add Roles
 
@@ -225,20 +227,20 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using api.Entities;
-using api.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using api.Entities;
+using api.Interfaces;
 
-namespace api.Services
+namespace test.Services
 {
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey _key;
         private readonly UserManager<AppUser> _userManager;
 
-        // 4.
+        // MODIFY THIS
         public TokenService(IConfiguration config, UserManager<AppUser> userManager)
         {
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
@@ -247,7 +249,7 @@ namespace api.Services
 
         public async Task<string> CreateToken(AppUser user)
         {
-            // 4.
+            // MODIFY THIS IF YOU WANT
             var claims = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
@@ -255,13 +257,12 @@ namespace api.Services
 
             };
 
-            // 4.
+            // ADD THIS
             var roles = await _userManager.GetRolesAsync(user);
 
-            // 
+            // ADD THIS
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            // create signingCredentials
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescription = new SecurityTokenDescriptor
@@ -279,6 +280,105 @@ namespace api.Services
         }
     }
 }
+```
+### Modify Controller
+in `Controllers/AuthController.cs`
+```cs
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using api.DTO;
+using api.Entities;
+using api.Interfaces;
+
+namespace test.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
+    {
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly ITokenService _tokenService;
+
+        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _tokenService = tokenService;
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.username.ToLower()))
+                return BadRequest("Username is taken");
+
+            var user = new AppUser
+            {
+                UserName = registerDto.username.ToLower(),
+                CreatedAt = DateTime.Now
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            // MODIFY THIS
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
+        {
+            var user = await _userManager
+                .Users
+                .SingleOrDefaultAsync(
+                    x => x.UserName == loginDto.username);
+
+            if (user == null)
+                return Unauthorized("Invalid Username");
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.password, false);
+
+            if (!result.Succeeded)
+                return Unauthorized("Invalid password");
+
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+
+        [Authorize]
+        [HttpGet("auth")]
+        public string Authorize()
+        {
+            return "only users with token could see this";
+        }
+
+        [AllowAnonymous]
+        [HttpGet("unauth")]
+        public string Annonymous()
+        {
+            return "users and annonymous could see this";
+        }
+    }
+}
+```
+### Make migration
+```sh
+dotnet ef migrations add IdentityAdded
+dotnet ef database drop
+dotnet ef database update  
 ```
 ### Add policy
 in `Startup.cs`
