@@ -40,6 +40,27 @@ After all your `template.csproj` should looks like this
 Configure `appsettings.Development.json` to customize db connection, roles
 ```json
 {
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=127.0.0.1;Database=template;User Id=sa;Password=super_secret_password"
+  },
+  "TokenKey": "super secret key to your token service",
+  "Roles": [
+    "Admin",
+    "Moderator",
+    "Member"
+  ],
+  "Admin": {
+    "Enable": true,
+    "Data": {
+      "Email": "admin@dev.com",
+      "Username": "admin",
+      "Password": "Semafor4!"
+    }
+  },
+  "DropAndSeedDb": {
+    "Enable": true,
+    "FileLocation": ""
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
