@@ -533,3 +533,113 @@ namespace template.DTO
     }
 }
 ```
+### Create controller
+in `Controllers/AuthController.cs`
+```cs
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using template.DTO;
+using template.Entities;
+using template.Interfaces;
+
+namespace template.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
+    {
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly ITokenService _tokenService;
+
+        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _tokenService = tokenService;
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.UserName.ToLower()))
+                return BadRequest("Username is taken");
+
+            var user = new AppUser
+            {
+                UserName = registerDto.UserName.ToLower(),
+                //
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            var roleResult = await _userManager.AddToRolesAsync(user, new[] { "Member" });
+            if (!roleResult.Succeeded)
+                return BadRequest(result.Errors);
+
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
+        {
+            var user = await _userManager
+                .Users
+                .SingleOrDefaultAsync(
+                    x => x.UserName == loginDto.UserName);
+
+            if (user == null)
+                return Unauthorized("Invalid Username");
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+
+            if (!result.Succeeded)
+                return Unauthorized("Invalid password");
+
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+
+        [Authorize]
+        [HttpGet("auth")]
+        public string Authorize()
+        {
+            return "only users with token could see this";
+        }
+
+        [AllowAnonymous]
+        [HttpGet("unauth")]
+        public string Annonymous()
+        {
+            return "users and annonymous could see this";
+        }
+        // ADD THIS
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpGet]
+        public string AuthorizeWithAdminPolicy()
+        {
+            return "only admin could see this";
+        }
+
+        // ADD THIS
+        [Authorize(Policy = "RequireModerateRole")]
+        [HttpGet]
+        public string AuthorizeWithModeratorPolicy()
+        {
+            return "only moderator could see this";
+        }
+    }
+}
+```
