@@ -10,6 +10,7 @@ cd template
 Version could be different based on dotnet version already installed and packages may change
 ```sh
 # use different package if would like to use PostgreSQL, MySQL or SQLite
+# for more information check section 3. Connect to database
 dotnet add package Microsoft.EntityFrameworkCore.SqlServer -v 5.0.0 &&
 dotnet add package Microsoft.EntityFrameworkCore.Design -v 5.0.0 &&
 dotnet add package System.IdentityModel.Tokens.Jwt -v 6.9.0 &&
