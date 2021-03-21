@@ -34,3 +34,16 @@ After all your `template.csproj` should looks like this
   </ItemGroup>
 </Project>
 ```
+### Configure appsettings
+Configure `appsettings.Development.json` to customize db connection, roles
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  }
+}
+```
