@@ -571,7 +571,9 @@ namespace template.Controllers
             var user = new AppUser
             {
                 UserName = registerDto.UserName.ToLower(),
-                //
+                // Add here properties you specify in
+                // `Entities/AppUser.cs` and which
+                // you want to add to database
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -625,7 +627,7 @@ namespace template.Controllers
         {
             return "users and annonymous could see this";
         }
-        // ADD THIS
+
         [Authorize(Policy = "RequireAdminRole")]
         [HttpGet]
         public string AuthorizeWithAdminPolicy()
@@ -633,7 +635,6 @@ namespace template.Controllers
             return "only admin could see this";
         }
 
-        // ADD THIS
         [Authorize(Policy = "RequireModerateRole")]
         [HttpGet]
         public string AuthorizeWithModeratorPolicy()
@@ -643,9 +644,10 @@ namespace template.Controllers
     }
 }
 ```
-### Create migration
+### Create migration and run
 ```sh
-cd template
-dotnet ef migrations add InitialCreate -o Data/Migrations # To undo this action, use 'ef migrations remove'
-dotnet ef database update
+cd template &&
+dotnet ef migrations add InitialCreate -o Data/Migrations && # To undo this action, use 'ef migrations remove'
+dotnet ef database update &&
+dotnet run
 ```
