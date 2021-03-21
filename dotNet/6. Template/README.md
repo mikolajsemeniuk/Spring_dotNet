@@ -19,9 +19,11 @@ dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore -v 5.0.0
 After all your `template.csproj` should looks like this
 ```csproj
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605" />
@@ -34,6 +36,7 @@ After all your `template.csproj` should looks like this
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.9.0" />
   </ItemGroup>
+
 </Project>
 ```
 ### Configure appsettings
@@ -41,7 +44,7 @@ Configure `appsettings.Development.json` to customize db connection, roles
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=127.0.0.1;Database=template;User Id=sa;Password=super_secret_password"
+    "DefaultConnection": "Server=127.0.0.1;Database=template;User Id=sa;Password=CHANGE_PASSWORD"
   },
   "TokenKey": "super secret key to your token service",
   "Roles": [
@@ -49,17 +52,9 @@ Configure `appsettings.Development.json` to customize db connection, roles
     "Moderator",
     "Member"
   ],
-  "Admin": {
-    "Enable": true,
-    "Data": {
-      "Email": "admin@dev.com",
-      "Username": "admin",
-      "Password": "Semafor4!"
-    }
-  },
   "DropAndSeedDb": {
     "Enable": true,
-    "FileLocation": ""
+    "FileLocation": "Data/SeedData.json"
   },
   "Logging": {
     "LogLevel": {
@@ -88,7 +83,7 @@ namespace template.Entities
         //      public DateTime UpdatedAt { get; set; }
 
 
-        
+
         // Relation below is demanded by
         // `AspNetCore.Identity` to create
         // `AspNetUsers` table in database
@@ -310,7 +305,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using template.Data;
 using template.Entities;
 using template.Interfaces;
@@ -369,10 +363,10 @@ namespace template
             });
             
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "template", Version = "v1" });
-            });
+            // services.AddSwaggerGen(c =>
+            // {
+            //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "template", Version = "v1" });
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -381,8 +375,8 @@ namespace template
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "template v1"));
+                // app.UseSwagger();
+                // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "template v1"));
             }
 
             app.UseHttpsRedirection();
@@ -406,10 +400,14 @@ namespace template
 ### Configure initial settings
 in `Data/Seed.cs`
 ```cs
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using template.DTO;
 using template.Entities;
 
 namespace template.Data
@@ -421,15 +419,39 @@ namespace template.Data
             if (!bool.Parse(config["DropAndSeedDb:Enable"]))
                 return;
 
-            var initialRoles = config
+            // Remove all current users
+            var oldUsers = await userManager.Users.ToListAsync();
+            foreach (var user in oldUsers)
+                await userManager.DeleteAsync(user);
+
+            // Remove all current roles
+            var oldRoles = await roleManager.Roles.ToListAsync();
+            foreach (var role in oldRoles)
+                await roleManager.DeleteAsync(role);
+
+            // Get roles from config
+            var newRoles = config
                 .GetSection("Roles")
                 .GetChildren()
                 .ToArray()
                 .Select(c => c.Value)
                 .ToArray();
 
-            foreach (var role in initialRoles)
+            // Add roles
+            foreach (var role in newRoles)
                 await roleManager.CreateAsync(new AppRole { Name = role });
+
+            // Read list of users
+            var userData = await System.IO.File.ReadAllTextAsync(config["DropAndSeedDb:FileLocation"]);
+            var newUsers = JsonSerializer.Deserialize<List<MockDto>>(userData);
+
+            // Add users
+            foreach (var user in newUsers)
+            { 
+                var _user = new AppUser { UserName = user.UserName, Email = user.Email };
+                await userManager.CreateAsync(_user, "Excel!1");
+                await userManager.AddToRolesAsync(_user, user.Roles.ToArray());
+            }
         }
     }
 }
@@ -452,16 +474,12 @@ namespace template
 {
     public class Program
     {
-        // public static void Main(string[] args)
-        // {
-        //     CreateHostBuilder(args).Build().Run();
-        // }
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
             var services = scope.ServiceProvider;
-            
+
             try
             {
                 var context = services.GetRequiredService<DataContext>();
@@ -500,6 +518,10 @@ namespace template.DTO
 {
     public class RegisterDto
     {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+        
         [StringLength(50, MinimumLength = 4)]
         public string UserName { get; set; }
         [StringLength(50, MinimumLength = 4)]
@@ -530,6 +552,18 @@ namespace template.DTO
     {
         public string Username { get; set; }
         public string Token { get; set; }
+    }
+}
+```
+in `DTO/MockDto.cs`
+```cs
+namespace template.DTO
+{
+    public class MockDto
+    {
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string[] Roles { get; set; }
     }
 }
 ```
@@ -565,15 +599,16 @@ namespace template.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
+            if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email.ToLower()))
+                return BadRequest("Email is taken");
+
             if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.UserName.ToLower()))
                 return BadRequest("Username is taken");
 
             var user = new AppUser
             {
                 UserName = registerDto.UserName.ToLower(),
-                // Add here properties you specify in
-                // `Entities/AppUser.cs` and which
-                // you want to add to database
+                Email = registerDto.Email.ToLower()
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -629,14 +664,14 @@ namespace template.Controllers
         }
 
         [Authorize(Policy = "RequireAdminRole")]
-        [HttpGet]
+        [HttpGet("admin")]
         public string AuthorizeWithAdminPolicy()
         {
             return "only admin could see this";
         }
 
         [Authorize(Policy = "RequireModerateRole")]
-        [HttpGet]
+        [HttpGet("mod")]
         public string AuthorizeWithModeratorPolicy()
         {
             return "only moderator could see this";
