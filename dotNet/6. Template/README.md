@@ -491,3 +491,45 @@ namespace template
     }
 }
 ```
+### Adding DTO
+in `DTO/RegisterDto.cs`
+```cs
+using System.ComponentModel.DataAnnotations;
+
+namespace template.DTO
+{
+    public class RegisterDto
+    {
+        [StringLength(50, MinimumLength = 4)]
+        public string UserName { get; set; }
+        [StringLength(50, MinimumLength = 4)]
+        public string Password { get; set; }
+    }
+}
+```
+in `DTO/LoginDto.cs`
+```cs
+using System.ComponentModel.DataAnnotations;
+
+namespace template.DTO
+{
+    public class LoginDto
+    {
+        [StringLength(50, MinimumLength = 4)]
+        public string UserName { get; set; }
+        [StringLength(50, MinimumLength = 4)]
+        public string Password { get; set; }
+    }
+}
+```
+in `DTO/UserDto.cs`
+```cs
+namespace template.DTO
+{
+    public class UserDto
+    {
+        public string Username { get; set; }
+        public string Token { get; set; }
+    }
+}
+```
