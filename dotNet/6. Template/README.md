@@ -70,3 +70,94 @@ Configure `appsettings.Development.json` to customize db connection, roles
   }
 }
 ```
+### Create Entities
+in `Entities/AppUser.cs`
+```cs
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+
+namespace template.Entities
+{
+    public class AppUser : IdentityUser<int>
+    {
+        // Put all properties You want to add
+        // to `AspNetUsers` Table in Database
+        //
+        // example:
+        //      public DateTime CreatedAt { get; set; }
+        //      public DateTime UpdatedAt { get; set; }
+
+
+        
+        // Relation belov is demanded by
+        // `AspNetCore.Identity` to create
+        // `AspNetUsers` table in database
+        // with columns:
+        //      * Id
+        //      * UserName
+        //      * NormalizedUserName
+        //      * Email
+        //      * NormalizedEmail
+        //      * EmailConfirmed
+        //      * PasswordHash
+        //      * SecurityStamp
+        //      * ConcurrencyStamp
+        //      * PhoneNumber
+        //      * PhoneNumberConfirmed
+        //      * TwoFactorEnabled
+        //      * LockoutEnd
+        //      * LockoutEnabled
+        //      * AccessFailedCount
+        //
+        // Put other relations you want
+        // to include after that
+        public ICollection<AppUserRole> UserRoles { get; set; }
+    }
+}
+```
+in `Entities/AppRole.cs`
+```cs
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+
+namespace template.Entities
+{
+    public class AppRole : IdentityRole<int>
+    {
+        // Relation belov is demanded by
+        // `AspNetCore.Identity` to create
+        // `AspNetRoles` table in database
+        // with columns:
+        //      * Id
+        //      * Name
+        //      * NormalizedName
+        //      * ConcurrencyStamp
+        //
+        // Put other relations you want
+        // to include after that
+        public ICollection<AppUserRole> UserRoles { get; set; }
+    }
+}
+```
+in `Entities/AppUserRole.cs`
+```cs
+using Microsoft.AspNetCore.Identity;
+
+namespace template.Entities
+{
+    public class AppUserRole : IdentityUserRole<int>
+    {
+        // Relation belov is demanded by
+        // `AspNetCore.Identity` to create
+        // `AspNetUserRoles` table in database
+        // with columns:
+        //      * UserId
+        //      * RoleId
+        //
+        // Put other relations you want
+        // to include after that
+        public AppUser User { get; set; }
+        public AppRole Role { get; set; }
+    }
+}
+```
