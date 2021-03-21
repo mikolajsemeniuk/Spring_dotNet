@@ -89,7 +89,7 @@ namespace template.Entities
 
 
         
-        // Relation belov is demanded by
+        // Relation below is demanded by
         // `AspNetCore.Identity` to create
         // `AspNetUsers` table in database
         // with columns:
@@ -124,7 +124,7 @@ namespace template.Entities
 {
     public class AppRole : IdentityRole<int>
     {
-        // Relation belov is demanded by
+        // Relation below is demanded by
         // `AspNetCore.Identity` to create
         // `AspNetRoles` table in database
         // with columns:
@@ -147,7 +147,7 @@ namespace template.Entities
 {
     public class AppUserRole : IdentityUserRole<int>
     {
-        // Relation belov is demanded by
+        // Relation below is demanded by
         // `AspNetCore.Identity` to create
         // `AspNetUserRoles` table in database
         // with columns:
@@ -158,6 +158,55 @@ namespace template.Entities
         // to include after that
         public AppUser User { get; set; }
         public AppRole Role { get; set; }
+    }
+}
+```
+### Add DbContext
+in `Data/DbContext.cs`
+```cs
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using template.Entities;
+
+namespace template.Data
+{
+    // Every derive means one table in database
+    //
+    // We have to specify all tables because
+    // we changed default key from `string` to `int`
+    public class DataContext : IdentityDbContext<AppUser, AppRole, int,
+                               IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>,
+                               IdentityRoleClaim<int>, IdentityUserToken<int>>
+    {
+        public DataContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Relations below is demanded by
+            // AspNetCore.Identity
+            // Do not touch them and
+            // specify other relations after
+            builder.Entity<AppUser>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(u => u.User)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+
+            // Relations below is demanded by
+            // AspNetCore.Identity
+            // Do not touch them and
+            // specify other relations after
+            builder.Entity<AppRole>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(u => u.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
+        }
     }
 }
 ```
