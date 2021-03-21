@@ -647,7 +647,7 @@ namespace template.Controllers
 ### Create migration and run
 ```sh
 cd template &&
-dotnet ef migrations add InitialCreate -o Data/Migrations && # To undo this action, use 'ef migrations remove'
+dotnet ef migrations add InitialCreate -o Data/Migrations &&
 dotnet ef database update &&
 dotnet run
 ```
