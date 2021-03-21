@@ -210,3 +210,21 @@ namespace template.Data
     }
 }
 ```
+### Create Service
+in `Interfaces/ITokenService.cs`
+```cs
+using System.Threading.Tasks;
+using template.Entities;
+
+namespace template.Interfaces
+{
+    public interface ITokenService
+    {
+        Task<string> CreateToken(AppUser user);
+    }
+}
+```
+in `Services/TokenService.cs`
+```cs
+
+```
