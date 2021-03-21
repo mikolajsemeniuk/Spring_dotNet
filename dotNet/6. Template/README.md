@@ -403,3 +403,91 @@ namespace template
     }
 }
 ```
+### Configure initial settings
+in `Data/Seed.cs`
+```cs
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using template.Entities;
+
+namespace template.Data
+{
+    public class Seed
+    {
+        public static async Task InitSeed(IConfiguration config, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
+        {
+            if (!bool.Parse(config["DropAndSeedDb:Enable"]))
+                return;
+
+            var initialRoles = config
+                .GetSection("Roles")
+                .GetChildren()
+                .ToArray()
+                .Select(c => c.Value)
+                .ToArray();
+
+            foreach (var role in initialRoles)
+                await roleManager.CreateAsync(new AppRole { Name = role });
+        }
+    }
+}
+```
+in `Program.cs`
+```cs
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using template.Data;
+using template.Entities;
+
+namespace template
+{
+    public class Program
+    {
+        // public static void Main(string[] args)
+        // {
+        //     CreateHostBuilder(args).Build().Run();
+        // }
+        public static async Task Main(string[] args)
+        {
+            var host = CreateHostBuilder(args).Build();
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            
+            try
+            {
+                var context = services.GetRequiredService<DataContext>();
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+                var config = services.GetRequiredService<IConfiguration>();
+
+                await context.Database.MigrateAsync();
+                await Seed.InitSeed(config, userManager, roleManager);
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<Logger<Program>>();
+                logger.LogError($"error: {ex}");
+            }
+
+            await host.RunAsync();
+        }
+
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
+}
+```
