@@ -28,6 +28,7 @@ In `app.component.html`
 <h1>App component here</h1>
 <!-- Nested component -->
 <app-home></app-home>
-
+<p routerLink="/info">go to info page</p>
+<p [routerLink]="['/info']">go to info page</p>
 <router-outlet></router-outlet>
 ```
