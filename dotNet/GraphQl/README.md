@@ -1,6 +1,9 @@
 # GraphQl
 * Install packages
 * Create model
+* Create interface
+* Create service
+* Create Query
 
 ### Install packages
 ```csproj
@@ -96,7 +99,7 @@ namespace graph.Services
 }
 ```
 ### Create Query
-in `ProductQuery.cs`
+in `Queries/ProductQuery.cs`
 ```cs
 using graph.Interfaces;
 using graph.Type;
@@ -128,7 +131,7 @@ namespace graph.Query
 }
 ```
 ### Create Types
-in `ProductType.cs`
+in `Types/ProductType.cs`
 ```cs
 using graph.Models;
 using GraphQL.Types;
@@ -146,7 +149,7 @@ namespace graph.Type
     }
 }
 ```
-in `ProductInputType.cs`
+in `Types/ProductInputType.cs`
 ```cs
 using GraphQL.Types;
 
@@ -163,8 +166,8 @@ namespace graph.Type
     }
 }
 ```
-### Create mutations
-in `Mutation/ProductMutation.cs`
+### Create mutation
+in `Mutations/ProductMutation.cs`
 ```cs
 using graph.Interfaces;
 using graph.Models;
@@ -223,7 +226,7 @@ namespace graph.Mutation
 }
 ```
 ### Create schema
-in `Schema/ProductSchema.cs`
+in `Schemas/ProductSchema.cs`
 ```cs
 using graph.Mutation;
 using graph.Query;
