@@ -4,6 +4,11 @@
 * Create interface
 * Create service
 * Create Query
+* Create Types
+* Create mutation
+* Create schema
+* Configure services
+* Test
 
 ### Install packages
 ```csproj
@@ -207,7 +212,7 @@ namespace graph.Mutation
                             return productService.UpdateProduct(productId, productObj);
                         }
             );
-            Field<ProductType>(
+            Field<StringGraphType>(
                 "deleteProduct",
                 arguments:
                     new QueryArguments(
@@ -323,5 +328,60 @@ namespace graph
             app.UseGraphQL<ISchema>();
         }
     }
+}
+```
+### Test
+```
+query GetAll {
+  products {
+    id,
+    name,
+    price
+  }
+}
+query GetSingleById {
+  product(id: 1) {
+    id,
+    name,
+    price
+  }
+}
+mutation AddProduct($product: ProductInputType) {
+  createProduct(product: $product) {
+  	id,
+    name,
+    price
+  }
+}
+# Query Variable
+{
+  "product": {
+    "id": 4,
+    "name": "passionfruit",
+    "price": 35
+  }
+}
+mutation UpdateProduct($id: Int, $product: ProductInputType) {
+  updateProduct(id: $id product: $product) {
+  	id,
+    name,
+    price
+  }
+}
+# Query Variable
+{
+  "id": 2,
+  "product": {
+    "id": 3,
+    "name": "test fruit",
+    "price": 40
+  }
+}
+mutation DeleteProduct($id:Int) {
+	deleteProduct(id:$id)
+}
+# Query Variable
+{
+  "id": 0
 }
 ```
