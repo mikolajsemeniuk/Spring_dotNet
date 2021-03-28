@@ -331,7 +331,7 @@ namespace graph
 }
 ```
 ### Test
-```
+```graphql
 query GetAll {
   products {
     id,
@@ -348,7 +348,7 @@ query GetSingleById {
 }
 mutation AddProduct($product: ProductInputType) {
   createProduct(product: $product) {
-  	id,
+    id,
     name,
     price
   }
@@ -356,14 +356,14 @@ mutation AddProduct($product: ProductInputType) {
 # Query Variable
 {
   "product": {
-    "id": 4,
+    "id": 2,
     "name": "passionfruit",
     "price": 35
   }
 }
 mutation UpdateProduct($id: Int, $product: ProductInputType) {
   updateProduct(id: $id product: $product) {
-  	id,
+    id,
     name,
     price
   }
@@ -372,8 +372,8 @@ mutation UpdateProduct($id: Int, $product: ProductInputType) {
 {
   "id": 2,
   "product": {
-    "id": 3,
-    "name": "test fruit",
+    "id": 2,
+    "name": "pineapple",
     "price": 40
   }
 }
@@ -382,6 +382,6 @@ mutation DeleteProduct($id:Int) {
 }
 # Query Variable
 {
-  "id": 0
+  "id": 2
 }
 ```
