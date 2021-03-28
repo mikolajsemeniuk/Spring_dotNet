@@ -3,8 +3,8 @@
 * Create model
 * Create interface
 * Create service
-* Create Query
 * Create Types
+* Create Query
 * Create mutation
 * Create schema
 * Configure services
@@ -103,38 +103,6 @@ namespace graph.Services
     }
 }
 ```
-### Create Query
-in `Queries/ProductQuery.cs`
-```cs
-using graph.Interfaces;
-using graph.Type;
-using GraphQL;
-using GraphQL.Types;
-
-namespace graph.Query
-{
-    public class ProductQuery : ObjectGraphType
-    {
-        public ProductQuery(IProductService productService)
-        {
-            Field<ListGraphType<ProductType>>(
-                "products",
-                resolve: context => 
-                { 
-                    return productService.GetAllProducts(); 
-                }
-            );
-            Field<ProductType>(
-                "product", 
-                arguments: new QueryArguments(new QueryArgument<IntGraphType> { Name = "id" }),
-                resolve: context => { 
-                    return productService.GetProductById(context.GetArgument<int>("id")); 
-                }
-            );
-        }
-    }
-}
-```
 ### Create Types
 in `Types/ProductType.cs`
 ```cs
@@ -167,6 +135,38 @@ namespace graph.Type
             Field<IntGraphType>("id");
             Field<StringGraphType>("name");
             Field<FloatGraphType>("price");
+        }
+    }
+}
+```
+### Create Query
+in `Queries/ProductQuery.cs`
+```cs
+using graph.Interfaces;
+using graph.Type;
+using GraphQL;
+using GraphQL.Types;
+
+namespace graph.Query
+{
+    public class ProductQuery : ObjectGraphType
+    {
+        public ProductQuery(IProductService productService)
+        {
+            Field<ListGraphType<ProductType>>(
+                "products",
+                resolve: context => 
+                { 
+                    return productService.GetAllProducts(); 
+                }
+            );
+            Field<ProductType>(
+                "product", 
+                arguments: new QueryArguments(new QueryArgument<IntGraphType> { Name = "id" }),
+                resolve: context => { 
+                    return productService.GetProductById(context.GetArgument<int>("id")); 
+                }
+            );
         }
     }
 }
