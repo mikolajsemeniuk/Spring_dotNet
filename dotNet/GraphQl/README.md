@@ -331,6 +331,7 @@ namespace graph
 }
 ```
 ### Test
+go to `https://localhost:5001/graph/`
 ```graphql
 query GetAll {
   products {
