@@ -9,6 +9,7 @@
 * Create schema
 * Configure services
 * Test
+* Db connection
 
 ### Install packages
 ```csproj
@@ -384,5 +385,78 @@ mutation DeleteProduct($id:Int) {
 # Query Variable
 {
   "id": 2
+}
+```
+### Db connection
+Add Db connection in section 3 and
+
+modify `Interfaces/IProductService.cs`
+```cs
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using graphq.Models;
+
+namespace graphq.Interfaces
+{
+    public interface IProductService
+    {
+        Task<List<Product>> GetAllProducts();
+        Task<Product> GetProductById(int id);
+        Task<Product> AddProduct(Product product);
+        Task<Product> UpdateProduct(int id, Product product);
+        Task DeleteProduct(int id);
+    }
+}
+```
+and modify `Services/ProductService.cs` to have fully functional CRUD
+```cs
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using graphq.Data;
+using graphq.Interfaces;
+using graphq.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace graphq.Services
+{
+    public class ProductService : IProductService
+    {
+        private readonly DataContext _context;
+
+        public ProductService(DataContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<List<Product>> GetAllProducts()
+        {
+            return await _context.Products.ToListAsync();
+        }
+        public async Task<Product> GetProductById(int id)
+        {
+            return await _context.Products.FindAsync(id);
+        }
+        public async Task<Product> AddProduct(Product product)
+        {
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+            return product;
+        }
+        public async Task<Product> UpdateProduct(int id, Product product)
+        {
+            var obj = await _context.Products.FindAsync(id);
+            obj.Name = product.Name;
+            obj.Price = product.Price;
+            await _context.SaveChangesAsync();
+            return product;
+        }
+        public async Task DeleteProduct(int id)
+        {
+            var obj = await _context.Products.FindAsync(id);
+            _context.Products.Remove(obj);
+            await _context.SaveChangesAsync();
+        }
+    }
 }
 ```
