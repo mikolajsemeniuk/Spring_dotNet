@@ -288,11 +288,11 @@ namespace graph
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IProductService, ProductService>();
-            services.AddSingleton<ProductType>();
-            services.AddSingleton<ProductQuery>();
-            services.AddSingleton<ProductMutation>();
-            services.AddSingleton<ISchema, ProductSchema>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ProductType>();
+            services.AddScoped<ProductQuery>();
+            services.AddScoped<ProductMutation>();
+            services.AddScoped<ISchema, ProductSchema>();
             services.AddGraphQL(options => {
                 options.EnableMetrics = false;
             }).AddSystemTextJson();
