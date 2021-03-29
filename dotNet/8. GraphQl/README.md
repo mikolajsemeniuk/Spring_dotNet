@@ -380,7 +380,7 @@ mutation UpdateProduct($id: Int, $product: ProductInputType) {
   }
 }
 mutation DeleteProduct($id:Int) {
-	deleteProduct(id:$id)
+  deleteProduct(id:$id)
 }
 # Query Variable
 {
