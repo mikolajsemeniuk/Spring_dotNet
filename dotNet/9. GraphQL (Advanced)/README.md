@@ -288,7 +288,8 @@ namespace les.GraphQL
     }
 }
 ```
-in ``
+### Modify Services
+in `Startup.cs`
 ```cs
 using les.Data;
 using les.GraphQL;
