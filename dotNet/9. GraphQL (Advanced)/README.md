@@ -285,6 +285,15 @@ namespace les.GraphQL
         {
             return context.Platforms;
         }
+
+        // Name of function will appear as endpoint in GraphQL
+        // and as a option in query 
+        [UseDbContext(typeof(AppDbContext))]
+        [UseProjection]
+        public IQueryable<Command> Command([ScopedService] AppDbContext context)
+        {
+            return context.Commands;
+        }
     }
 }
 ```
