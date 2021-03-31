@@ -104,7 +104,9 @@ namespace les.GraphQL
 {
     public class Query
     {
-        public IQueryable<Platform> GetPlatform([Service] AppDbContext context)
+        // Name of function will appear as endpoint in GraphQL
+        // and as a option in query 
+        public IQueryable<Platform> Platform([Service] AppDbContext context)
         {
             return context.Platforms;
         }
