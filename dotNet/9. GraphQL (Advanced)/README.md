@@ -39,6 +39,40 @@ namespace les.Data
         }
 
         public DbSet<Platform> Platforms { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder) 
+        {
+            base.OnModelCreating(builder);
+
+            builder
+                .Entity<Platform>()
+                .HasData(
+                    new Platform 
+                    { 
+                        Id = 1,
+                        Name = ".NET",
+                        LicenseKey = "7820707"
+                    },
+                    new Platform 
+                    { 
+                        Id = 2,
+                        Name = "Docker",
+                        LicenseKey = "988788"
+                    },
+                    new Platform 
+                    { 
+                        Id = 3,
+                        Name = "Windows",
+                        LicenseKey = "2327312"
+                    },
+                    new Platform 
+                    { 
+                        Id = 4,
+                        Name = "test",
+                        LicenseKey = "2323194"
+                    }
+                );
+        }
     }
 }
 ```
