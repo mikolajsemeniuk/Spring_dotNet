@@ -5,6 +5,8 @@
 * Add First Query
 * Configure services
 * Add Second Model and modify DbContext
+* Modify Query
+* Modify Services
 
 ### Connect to db
 Connect to db from section 3
@@ -258,6 +260,99 @@ namespace les.Data
                 .HasOne(p => p.Platform)
                 .WithMany(p => p.Commands)
                 .HasForeignKey(p => p.PlatformId);
+        }
+    }
+}
+```
+### Modify Query
+in `GraphQL/Query.cs`
+```cs
+using System.Linq;
+using HotChocolate;
+using HotChocolate.Data;
+using les.Data;
+using les.Models;
+
+namespace les.GraphQL
+{
+    public class Query
+    {
+        // Name of function will appear as endpoint in GraphQL
+        // and as a option in query 
+        [UseDbContext(typeof(AppDbContext))]
+        [UseProjection]
+        public IQueryable<Platform> Platform([ScopedService] AppDbContext context)
+        {
+            return context.Platforms;
+        }
+    }
+}
+```
+in ``
+```cs
+using les.Data;
+using les.GraphQL;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+
+namespace les
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // MODIFY THIS
+            services.AddPooledDbContextFactory<AppDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            services
+                .AddGraphQLServer()
+                .AddQueryType<Query>()
+                // ADD THIS
+                .AddProjections();
+
+            services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "les", Version = "v1" });
+            });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "les v1"));
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                // endpoints.MapControllers();
+                endpoints.MapGraphQL();
+            });
         }
     }
 }
