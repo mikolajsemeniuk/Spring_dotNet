@@ -34,8 +34,9 @@ Install packages `HotChocolate.AspNetCore` and `HotChocolate.Data.EntityFramewor
   </ItemGroup>
 </Project>
 ```
-### Create Model and DbContext
-in `Data/AppDbContext.cs`
+### Simple Query
+**Create Model and DbContext**
+in `Data/AppDbContext.cs` 
 ```cs
 using les.Models;
 using Microsoft.EntityFrameworkCore;
