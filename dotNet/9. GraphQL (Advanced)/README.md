@@ -502,3 +502,41 @@ query {
 }
 ```
 ### Using GraphsTypes (to get single command belongs to platform)
+> Add Platform type
+> in `GraphQL/Platforms/PlatformType.cs`
+```cs
+using System.Linq;
+using HotChocolate;
+using HotChocolate.Types;
+using les.Data;
+using les.Models;
+
+namespace les.GraphQL.Platforms
+{
+    public class PlatformType : ObjectType<Platform>
+    {
+        protected override void Configure(IObjectTypeDescriptor<Platform> descriptor)
+        {
+            descriptor.Description("my desc here");
+
+            descriptor
+                .Field(p => p.LicenseKey)
+                .Ignore();
+
+            descriptor
+                .Field(p => p.Commands)
+                .ResolveWith<Resolvers>(p => p.GetCommands(default!, default!))
+                .UseDbContext<AppDbContext>()
+                .Description("my second desc here");
+        }
+
+        private class Resolvers
+        {
+            public IQueryable<Command> GetCommands(Platform platform, [ScopedService] AppDbContext context)
+            {
+                return context.Commands.Where(p => p.PlatformId == platform.Id);
+            }
+        }
+    }
+}
+```
