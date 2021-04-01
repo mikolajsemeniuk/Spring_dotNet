@@ -128,8 +128,7 @@ namespace les
             // ADD THIS
             services
                 .AddGraphQLServer()
-                .AddQueryType<Query>()
-                .AddProjections();
+                .AddQueryType<Query>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
