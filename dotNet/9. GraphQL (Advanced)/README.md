@@ -40,8 +40,7 @@ Install packages `HotChocolate.AspNetCore` and `HotChocolate.Data.EntityFramewor
 ```
 ### Simple Query
 > Create Model and DbContext
-
-in `Data/AppDbContext.cs` 
+> in `Data/AppDbContext.cs` 
 ```cs
 using les.Models;
 using Microsoft.EntityFrameworkCore;
@@ -75,8 +74,7 @@ namespace les.Models
 }
 ```
 > Add First Query
-
-in `GraphQL/Query.cs`
+> in `GraphQL/Query.cs`
 ```cs
 using System.Linq;
 using HotChocolate;
@@ -97,8 +95,7 @@ namespace les.GraphQL
 }
 ```
 > Configure services
-
-in `Startup.cs`
+> in `Startup.cs`
 ```cs
 using les.Data;
 using les.GraphQL;
@@ -179,8 +176,7 @@ query {
 ```
 ### Parallel Query
 > Configure Services
-
-in `Startup.cs`
+> in `Startup.cs`
 ```cs
 using les.Data;
 using les.GraphQL;
@@ -250,8 +246,7 @@ namespace les
 }
 ```
 > Modify Query
-
-in `GraphQL/Query.cs`
+> in `GraphQL/Query.cs`
 ```cs
 using System.Linq;
 using HotChocolate;
@@ -292,8 +287,7 @@ query {
 ```
 ### Using projection
 > Add Second Model and modify DbContext
-
-in `Models/Platform.cs`
+> in `Models/Platform.cs`
 ```cs
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -367,8 +361,7 @@ namespace les.Data
 }
 ```
 > Modify Query
-
-in `GraphQL/Query.cs`
+> in `GraphQL/Query.cs`
 ```cs
 using System.Linq;
 using HotChocolate;
@@ -401,8 +394,7 @@ namespace les.GraphQL
 }
 ```
 > Modify Services
-
-in `Startup.cs`
+> in `Startup.cs`
 ```cs
 using les.Data;
 using les.GraphQL;
