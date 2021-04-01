@@ -364,7 +364,8 @@ namespace les.Data
     }
 }
 ```
-### Modify Query
+> Modify Query
+
 in `GraphQL/Query.cs`
 ```cs
 using System.Linq;
@@ -397,7 +398,8 @@ namespace les.GraphQL
     }
 }
 ```
-### Modify Services
+> Modify Services
+
 in `Startup.cs`
 ```cs
 using les.Data;
@@ -467,7 +469,7 @@ namespace les
     }
 }
 ```
-### Test
+> Test
 ```graphql
 # Using projection
 query {
