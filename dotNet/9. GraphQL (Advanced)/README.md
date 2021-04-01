@@ -35,7 +35,7 @@ Install packages `HotChocolate.AspNetCore` and `HotChocolate.Data.EntityFramewor
 </Project>
 ```
 ### Simple Query
-**Create Model and DbContext**
+> Create Model and DbContext
 in `Data/AppDbContext.cs` 
 ```cs
 using les.Models;
@@ -69,7 +69,7 @@ namespace les.Models
     }
 }
 ```
-### Add First Query
+> Add First Query
 in `GraphQL/Query.cs`
 ```cs
 using System.Linq;
@@ -90,7 +90,7 @@ namespace les.GraphQL
     }
 }
 ```
-### Configure services
+> Configure services
 in `Startup.cs`
 ```cs
 using les.Data;
