@@ -1,4 +1,5 @@
 # GraphQL (Advanced)
+[auth with graphql and identity](https://github.com/graphql-dotnet/authorization)
 * Connect to db
 * Install packages
 * Simple Query
