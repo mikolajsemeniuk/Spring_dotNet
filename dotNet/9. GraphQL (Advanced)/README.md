@@ -5,8 +5,11 @@
   - Create Model and DbContext
   - Add First Query
   - Configure services
+  - Test
 * Parallel Query
   - Configure services
+  - Modify Query
+  - Test
 * 
 * 
 * Add Second Model and modify DbContext
