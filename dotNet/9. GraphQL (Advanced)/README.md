@@ -15,6 +15,7 @@
   - Modify Query
   - Modify Services
   - Test
+* Using GraphsTypes (to get single command belongs to platform)
 
 ### Connect to db
 Connect to db from section 3
@@ -500,3 +501,4 @@ query {
   }
 }
 ```
+### Using GraphsTypes (to get single command belongs to platform)
