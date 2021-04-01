@@ -10,11 +10,10 @@
   - Configure services
   - Modify Query
   - Test
-* 
-* 
-* Add Second Model and modify DbContext
-* Modify Query
-* Modify Services
+* Using projection
+  - Add Second Model and modify DbContext
+  - Modify Query
+  - Modify Services
 
 ### Connect to db
 Connect to db from section 3
@@ -289,7 +288,9 @@ query {
   }
 }
 ```
-### Add Second Model and modify DbContext
+### Using projection
+> Add Second Model and modify DbContext
+
 in `Models/Platform.cs`
 ```cs
 using System.Collections.Generic;
@@ -468,31 +469,6 @@ namespace les
 ```
 ### Test
 ```graphql
-
-# Basic platform query
-query {
-  platform {
-    id,
-    name
-  }
-}
-
-# Parallel query using PolledDbContext 
-query {
-  a: platform {
-    id,
-    name
-  },
-  b: platform {
-    id,
-    name
-  },
-  c: platform {
-    id,
-    name
-  }
-}
-
 # Using projection
 query {
   platform {
@@ -505,7 +481,9 @@ query {
     }
   }
 }
+```
 
+```
 # using GraphsTypes
 query {
   command {
