@@ -26,6 +26,7 @@
   - Add Payload
   - Add Mutation
   - Modify services
+  - Test
 
 ### Connect to db
 Connect to db from section 3
