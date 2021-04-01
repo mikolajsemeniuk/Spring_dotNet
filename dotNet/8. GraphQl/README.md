@@ -1,5 +1,5 @@
 # GraphQl
-[important link](https://github.com/graphql-dotnet/authorization)
+[auth with graphql and identity](https://github.com/graphql-dotnet/authorization)
 * Install packages
 * Create model
 * Create interface
