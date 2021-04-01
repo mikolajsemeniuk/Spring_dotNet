@@ -195,6 +195,7 @@ namespace graph.Mutation
                 resolve: 
                     context => 
                         {
+                            // AVOID NOT RETURNING SERVICE BECAUSE YOU WILL GET AN ERROR
                             return productService.AddProduct(context.GetArgument<Product>("product"));
                         }
             );
@@ -211,6 +212,7 @@ namespace graph.Mutation
                         {
                             var productId = context.GetArgument<int>("id");
                             var productObj = context.GetArgument<Product>("product");
+                            // AVOID NOT RETURNING SERVICE BECAUSE YOU WILL GET AN ERROR
                             return productService.UpdateProduct(productId, productObj);
                         }
             );
@@ -221,11 +223,11 @@ namespace graph.Mutation
                         new QueryArgument<IntGraphType> { Name = "id" }
                     ),
                 resolve:
-                    context =>
+                    context => 
                     {
                         var productId = context.GetArgument<int>("id");
-                        productService.DeleteProduct(productId);
-                        return $"The product against the {productId} was deleted";
+                        // AVOID NOT RETURNING SERVICE BECAUSE YOU WILL GET AN ERROR
+                        return productService.DeleteProduct(productId);
                     }
             );
         }
@@ -405,7 +407,7 @@ namespace graphq.Interfaces
         Task<Product> GetProductById(int id);
         Task<Product> AddProduct(Product product);
         Task<Product> UpdateProduct(int id, Product product);
-        Task DeleteProduct(int id);
+        Task<string> DeleteProduct(int id);
     }
 }
 ```
@@ -452,11 +454,13 @@ namespace graphq.Services
             await _context.SaveChangesAsync();
             return product;
         }
-        public async Task DeleteProduct(int id)
+        public async Task<string> DeleteProduct(int id)
         {
-            var obj = await _context.Products.FindAsync(id);
-            _context.Products.Remove(obj);
+            var product = await _context.Products.FindAsync(id);
+
+            _context.Remove(product);
             await _context.SaveChangesAsync();
+            return $"The product against the {id} was deleted";
         }
     }
 }
