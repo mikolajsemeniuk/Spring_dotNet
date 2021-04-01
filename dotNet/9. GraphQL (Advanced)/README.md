@@ -14,6 +14,7 @@
   - Add Second Model and modify DbContext
   - Modify Query
   - Modify Services
+  - Test
 
 ### Connect to db
 Connect to db from section 3
