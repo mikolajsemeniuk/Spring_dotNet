@@ -692,6 +692,13 @@ namespace les.GraphQL.Platforms
     public record AddPlatformInput(string Name, string LicenseKey);
 }
 ```
+> in `GraphQL/Commands/AddCommandInput.cs`
+```cs
+namespace les.GraphQL.Commands
+{
+    public record AddCommandInput(string HowTo, string CommandLine, int PlatformId);
+}
+```
 > Add Payload
 > in `GraphQL/Platforms/AddPlatformPayload.cs`
 ```cs
@@ -700,6 +707,15 @@ using les.Models;
 namespace les.GraphQL.Platforms
 {
     public record AddPlatformPayload(Platform platform);
+}
+```
+> in `GraphQL/Commands/AddCommandPayload.cs`
+```cs
+using les.Models;
+
+namespace les.GraphQL.Commands
+{
+    public record AddCommandPayload(Command command);
 }
 ```
 > Add Mutation
@@ -732,6 +748,24 @@ namespace les.GraphQL
             await context.SaveChangesAsync();
 
             return new AddPlatformPayload(platform);
+        }
+        
+        [UseDbContext(typeof(AppDbContext))]
+        public async Task<AddCommandPayload> AddCommandAsync(
+            AddCommandInput input,
+            [ScopedService] AppDbContext context)
+        {
+            var command = new Command
+            {
+                HowTo = input.HowTo,
+                CommandLine = input.CommandLine,
+                PlatformId = input.PlatformId
+            };
+
+            context.Commands.Add(command);
+            await context.SaveChangesAsync();
+
+            return new AddCommandPayload(command);
         }
     }
 }
@@ -812,7 +846,6 @@ namespace les
 > Test
 ```graphql
 mutation {
-  # Add Platform
   addPlatform(input: {
     name: "ubuntu",
     licenseKey: "111111"
@@ -822,6 +855,25 @@ mutation {
     platform {
       id,
       name
+    }
+  }
+}
+
+mutation {
+  addCommand(input: {
+    howTo: "perform something",
+    commandLine: "dir",
+    platformId: 2
+  })
+  {
+    command {
+      id,
+      howTo,
+      commandLine,
+      platform {
+        id,
+        name
+      }
     }
   }
 }
