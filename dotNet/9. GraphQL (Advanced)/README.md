@@ -1,5 +1,5 @@
 # GraphQL (Advanced)
-[auth with graphql and identity](https://github.com/graphql-dotnet/authorization)
+[auth with graphql and identity](https://chillicream.com/docs/hotchocolate/v10/security/)
 * Connect to db
 * Install packages
 * Simple Query
