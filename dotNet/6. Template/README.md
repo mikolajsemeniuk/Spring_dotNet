@@ -13,8 +13,8 @@ Version could be different based on dotnet version already installed and package
 # for more information check section 3. Connect to database
 dotnet add package Microsoft.EntityFrameworkCore.SqlServer -v 5.0.0 &&
 dotnet add package Microsoft.EntityFrameworkCore.Design -v 5.0.0 &&
-dotnet add package System.IdentityModel.Tokens.Jwt -v 6.9.0 &&
-dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore -v 5.0.0
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore -v 5.0.0 &&
+dotnet add package System.IdentityModel.Tokens.Jwt -v 6.9.0
 ```
 After all your `template.csproj` should looks like this
 ```csproj
