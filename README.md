@@ -23,6 +23,11 @@ Use:
 * cards with box shadow and border radius
 * colors, icons, graphics
 
+Imporatans:
+* sidebar -> fixed size,
+* container -> flex size
+* text, cards, boxes -> fixed size
+
 Semantic:
 * `<article>`
 * `<aside>`
