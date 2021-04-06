@@ -16,4 +16,18 @@ hindi flex dashboard breakouts
 * table(768px-991px)
 * laptop (992px-)
 
+Semantic
+* <article>
+* <aside>
+* <details>
+* <figcaption>
+* <figure>
+* <footer>
+* <header>
+* <main>
+* <mark>
+* <nav>
+* <section>
+* <summary>
+* <time>
 
