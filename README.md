@@ -16,7 +16,14 @@ creative tim flex dashboard breakouts
 * tablet (768px-991px)
 * laptop (992px-)
 
-Semantic
+Use:
+* nice font (roboto)
+* big font size and small text
+* big margin and padding
+* cards with box shadow and border radius
+* colors, icons, graphics
+
+Semantic:
 * `<article>`
 * `<aside>`
 * `<details>`
