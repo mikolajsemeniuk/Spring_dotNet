@@ -17,17 +17,17 @@ hindi flex dashboard breakouts
 * laptop (992px-)
 
 Semantic
-* <article>
-* <aside>
-* <details>
-* <figcaption>
-* <figure>
-* <footer>
-* <header>
-* <main>
-* <mark>
-* <nav>
-* <section>
-* <summary>
-* <time>
+* `<article>`
+* `<aside>`
+* `<details>`
+* `<figcaption>`
+* `<figure>`
+* `<footer>`
+* `<header>`
+* `<main>`
+* `<mark>`
+* `<nav>`
+* `<section>`
+* `<summary>`
+* `<time>`
 
