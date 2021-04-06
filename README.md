@@ -11,9 +11,9 @@ apple static page breakouts
 * tablet (735px-1068px)
 * laptop (1069px-)
 
-hindi flex dashboard breakouts
+creative tim flex dashboard breakouts
 * phone (320px-767px)
-* table(768px-991px)
+* tablet (768px-991px)
 * laptop (992px-)
 
 Semantic
