@@ -3,6 +3,4 @@
 * divs go as a rows
 * text should be in divs
 
-
-najpierw flex
-potem albo padding albo widht and height and margin
+flex + height + margin = height + padding
