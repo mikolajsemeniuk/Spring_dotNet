@@ -1,8 +1,8 @@
 # Commands
 * Modules
 * Components
-* Models
 * Services
+* Models
 * Guards
 
 ### Modules
@@ -82,4 +82,10 @@ import { HomeComponent } from '../components/home/home.component';
   ]
 })
 export class SharedModule { }
+```
+### Services
+Create service
+```sh
+ng g s services/documents # with tests
+ng g s services/documents --skipTests=true # without tests
 ```
