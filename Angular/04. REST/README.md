@@ -1,5 +1,6 @@
 # Rest
 * Add module
+* Modify service
 
 ### Add module
 in `src/app/app.module.ts`
@@ -30,4 +31,10 @@ import { SharedModule } from './modules/shared.module';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+```
+
+### Modify service
+in `src/app/services/documents.service.ts`
+```ts
+
 ```
