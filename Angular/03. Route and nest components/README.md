@@ -1,29 +1,45 @@
 # Components
-* Route components
-* Nest components
-#### Route components
+* Route
+* Navigate
+### Route
 In `app-routing.module.ts`
 ```ts
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
-  // {
-  //   path: 'home', children: [
-  //     { path: 'one', component: HomeComponent },
-  //     { path: 'second', component: HomeComponent },
-  //     { path: 'three', component: HomeComponent },
-  //   ]
-  // }
+  { path: 'home/:id', component: HomeComponent },
+  { path: 'children', children: [
+      { path: '', component: HomeComponent },
+      { path: 'one', component: HomeComponent },
+      { path: 'two', component: HomeComponent }
+    ]
+  }
 ];
 ```
-#### Nest components
-In `app.component.html`
+### Navigate
+if your component is **NOT IN APP MODULE** then add this to your module component
+```ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HomeComponent } from '../components/home/home.component';
+// ADD THIS
+import { RouterModule } from '@angular/router';
+
+@NgModule({
+  declarations: [
+    HomeComponent
+  ],
+  imports: [
+    CommonModule,
+    // ADD THIS
+    RouterModule
+  ],
+  exports: [
+    HomeComponent
+  ]
+})
+export class SharedModule { }
+```
+and then in `src/app/components/home.component.html`
 ```html
-<h1>App component here</h1>
-<!-- Nested component -->
-<app-home></app-home>
-
-<p routerLink="/info">go to info page</p>
-<p [routerLink]="['/info']">go to info page</p>
-
-<router-outlet></router-outlet>
+<p routerLink="/">home works!</p>
 ```
