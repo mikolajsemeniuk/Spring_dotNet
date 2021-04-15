@@ -1,11 +1,11 @@
 # Components
-* Routes components
+* Route components
 * Nest components
 #### Route components
 In `app-routing.module.ts`
 ```ts
 const routes: Routes = [
-  { path: 'info', component: HomeComponent }
+  { path: 'home', component: HomeComponent }
 ];
 ```
 #### Nest components
