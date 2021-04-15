@@ -60,5 +60,6 @@ export class AppModule { }
 ### Components
 Create Component
 ```sh
-ng g c components/home --skipTests=true --module shared
+ng g c components/home --skipTests=true --module app # global module
+ng g c components/home --skipTests=true --module ./modules/shared # your own module
 ```
