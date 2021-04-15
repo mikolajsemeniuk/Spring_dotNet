@@ -1,20 +1,6 @@
 # Components
-* Generate Components
 * Routes components
 * Nest components
-#### Generate Components
-Basic
-```sh
-ng generate component components/home
-```
-Shorter
-```sh
-ng g c components/home
-```
-Without tests
-```sh
-ng g c components/home --skipTests=true
-```
 #### Route components
 In `app-routing.module.ts`
 ```ts
