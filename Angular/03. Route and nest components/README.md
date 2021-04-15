@@ -4,7 +4,6 @@
 #### Route components
 In `app-routing.module.ts`
 ```ts
-// ng g c components/auth --skipTests=true --module ./modules/shared
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   // {
