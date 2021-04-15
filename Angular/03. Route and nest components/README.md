@@ -12,7 +12,9 @@ const routes: Routes = [
       { path: 'one', component: HomeComponent },
       { path: 'two', component: HomeComponent }
     ]
-  }
+  },
+  { path: 'redirect', redirectTo: 'home' },
+  { path: '**', redirectTo: 'home' },
 ];
 ```
 ### Navigate
