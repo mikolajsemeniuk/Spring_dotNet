@@ -44,6 +44,26 @@ export class SharedModule { }
 and then in `src/app/components/home.component.html`
 ```html
 <p routerLink="/">home works!</p>
-<a routerLink="/home/{{ 4 }}">click me please</a>
-<a [routerLink]="['/home', 4]">click me again</a>
+<p routerLink="/home/{{ 4 }}">click me please</p>
+<p [routerLink]="['/home', 4]">click me again</p>
+<p (click)="navigateMe(5)">navigate me by ts code</p>
+```
+in `src/app/components/home.component.ts`
+```ts
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss']
+})
+export class HomeComponent {
+
+  constructor(private router: Router) { }
+  
+  navigateMe(id: number): void {
+    this.router.navigate(['/home', id])
+  }
+}
 ```
