@@ -63,3 +63,23 @@ Create Component
 ng g c components/home --skipTests=true --module app # global module
 ng g c components/home --skipTests=true --module ./modules/shared # your own module
 ```
+in `src/app/shared/modules/shared.module.ts`
+```ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HomeComponent } from '../components/home/home.component';
+
+@NgModule({
+  declarations: [
+    HomeComponent
+  ],
+  imports: [
+    CommonModule
+  ],
+  exports: [
+    // ADD THIS MANUALLY
+    HomeComponent
+  ]
+})
+export class SharedModule { }
+```
