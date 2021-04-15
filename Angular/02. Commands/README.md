@@ -84,8 +84,13 @@ import { HomeComponent } from '../components/home/home.component';
 export class SharedModule { }
 ```
 ### Services
-Create service
+Create Service
 ```sh
 ng g s services/documents # with tests
 ng g s services/documents --skipTests=true # without tests
+```
+### Models
+Create Model
+```sh
+ng generate interface models/document --type=model
 ```
