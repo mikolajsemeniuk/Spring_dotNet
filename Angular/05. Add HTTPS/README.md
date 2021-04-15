@@ -1,6 +1,7 @@
 # Add HTTPS
 
 **OS X**
+
 	1. Double click on the certificate (server.crt)
 	2. Select your desired keychain (login should suffice)
 	3. Add the certificate
