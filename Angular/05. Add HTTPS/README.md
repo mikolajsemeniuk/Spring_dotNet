@@ -41,6 +41,7 @@ Then in `root/angular.json`
       "sslCert": "./ssl/server.crt",
       // ADD THIS
       "sslKey": "./ssl/server.key",
+      // ADD THIS
       "ssl": true,
       "browserTarget": "clientapp:build"
     },
