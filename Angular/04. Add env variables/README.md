@@ -6,7 +6,7 @@ in `src/environments/environment.ts`
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  apiUrl: 'https://jsonplaceholder.typicode.com/',
+  apiUrl: 'https://jsonplaceholder.typicode.com',
   production: false
 };
 
