@@ -4,8 +4,16 @@
 #### Route components
 In `app-routing.module.ts`
 ```ts
+// ng g c components/auth --skipTests=true --module ./modules/shared
 const routes: Routes = [
-  { path: 'home', component: HomeComponent }
+  { path: 'home', component: HomeComponent },
+  // {
+  //   path: 'home', children: [
+  //     { path: 'one', component: HomeComponent },
+  //     { path: 'second', component: HomeComponent },
+  //     { path: 'three', component: HomeComponent },
+  //   ]
+  // }
 ];
 ```
 #### Nest components
