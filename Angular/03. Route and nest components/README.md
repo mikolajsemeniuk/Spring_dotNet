@@ -44,4 +44,6 @@ export class SharedModule { }
 and then in `src/app/components/home.component.html`
 ```html
 <p routerLink="/">home works!</p>
+<a routerLink="/home/{{ 4 }}">click me please</a>
+<a [routerLink]="['/home', 4]">click me again</a>
 ```
