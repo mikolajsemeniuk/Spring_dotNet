@@ -59,7 +59,7 @@ namespace test.Data
             builder.Entity<UserLike>()
                 .HasOne(s => s.SourceUser)
                 .WithMany(l => l.LikedUsers)
-                .HasForeignKey(s => s.Source)
+                .HasForeignKey(s => s.SourceUserId)
                 // Use DeleteBehavior.NoAction
                 // If you are using SQL Server
                 .OnDelete(DeleteBehavior.Cascade);
