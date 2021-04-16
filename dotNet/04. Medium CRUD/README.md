@@ -117,7 +117,7 @@ namespace test.Services
         public async Task<Todo> GetTodoAsync(int id)
         {
             var todo = await _context.Todos.FindAsync(id);
-            if (todo != null)
+            if (todo == null)
                 throw new Exception("Could not find an item with this id");
             return todo;
         }
