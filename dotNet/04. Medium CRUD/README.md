@@ -1,5 +1,6 @@
 # Medium CRUD
 * Create Model
+* Modify DbContext
 * Create migration and update db
 * Create Input
 * Create Interface
@@ -19,6 +20,24 @@ namespace test.Models
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
         public Boolean IsDone { get; set; }
+    }
+}
+```
+### Modify DbContext
+in `Data/DataContext.cs`
+```cs
+using Microsoft.EntityFrameworkCore;
+using test.Models;
+
+namespace test.Data
+{
+    public class DataContext : DbContext
+    {
+        public DataContext(DbContextOptions options) : base(options)
+        {
+        }
+        public DbSet<Todo> Todos { get; set; }
+        public DbSet<Document> Documents { get; set; }
     }
 }
 ```
