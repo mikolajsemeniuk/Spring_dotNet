@@ -214,10 +214,18 @@ namespace les
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // services.AddPooledDbContextFactory<AppDbContext>(options =>
+            // {
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            // });
+            
             services.AddPooledDbContextFactory<AppDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            });
+                // options.EnableSensitiveDataLogging();
+            }, poolSize: 32);
+
+            services.AddScoped<AppDbContext>(option => option.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext());
             
             // ADD THIS
             services
