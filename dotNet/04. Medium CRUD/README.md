@@ -1,6 +1,8 @@
 # Medium CRUD
 * Create Model
 * Create migration and update db
+* Create Input
+* Create Interface
 
 ### Create Model
 in `Models/Todo.cs`
@@ -30,4 +32,23 @@ dotnet ef database update
 in `Controllers/TodosController.cs`
 ```cs
 
+```
+### Create Input
+in `DTO/TodoInput.cs`
+```cs
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace test.DTO
+{
+    public class TodoInput
+    {
+        [Required]
+        public string Title { get; set; }
+        [Required]
+        public string Description { get; set; }
+        [Required]
+        public Boolean IsDone { get; set; }
+    }
+}
 ```
