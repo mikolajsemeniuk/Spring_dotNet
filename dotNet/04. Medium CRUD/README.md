@@ -37,7 +37,6 @@ namespace test.Data
         {
         }
         public DbSet<Todo> Todos { get; set; }
-        public DbSet<Document> Documents { get; set; }
     }
 }
 ```
