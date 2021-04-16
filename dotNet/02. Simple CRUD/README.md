@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace DAPI.Controllers
 {
     [ApiController]
-    [Route("users")]
+    [Route("[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly ILogger _logger;
