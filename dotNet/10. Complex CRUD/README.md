@@ -1,6 +1,7 @@
 # Complex CRUD
 * Create Models
 * Configure DataContext
+* Create migration
 
 ### Create Models
 in `Models/User.cs`
@@ -66,4 +67,37 @@ namespace test.Models
         public Book Book { get; set; }
     }
 }
+```
+### Configure DataContext
+in `Data/DataContext.cs`
+```cs
+using Microsoft.EntityFrameworkCore;
+using test.Models;
+
+namespace test.Data
+{
+    public class DataContext : DbContext
+    {
+        public DataContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Author> Authors { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            // Specify relations here
+        }
+    }
+}
+```
+### Create migration
+```sh
+dotnet ef database drop
+dotnet ef migrations add Books
+dotnet ef database update
 ```
