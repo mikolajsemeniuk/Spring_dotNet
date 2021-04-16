@@ -75,3 +75,9 @@ namespace test.Data
     }
 }
 ```
+Create migration and update database
+```sh
+dotnet ef database drop
+dotnet ef migrations add UsersLikes
+dotnet ef database update
+```
