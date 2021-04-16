@@ -28,11 +28,6 @@ dotnet ef database drop
 dotnet ef migrations add Todos
 dotnet ef database update
 ```
-# Create Controller
-in `Controllers/TodosController.cs`
-```cs
-
-```
 ### Create Input
 in `DTO/TodoInput.cs`
 ```cs
@@ -51,4 +46,9 @@ namespace test.DTO
         public Boolean IsDone { get; set; }
     }
 }
+```
+# Create Controller
+in `Controllers/TodosController.cs`
+```cs
+
 ```
