@@ -65,7 +65,30 @@ namespace test.DTO
     }
 }
 ```
-# Create Controller
+### Create Interface
+in `Interfaces/ITodoRepository.cs`
+```cs
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using test.DTO;
+using test.Models;
+
+namespace test.Interfaces
+{
+    public interface ITodoRepository
+    {
+        Task<IEnumerable<Todo>> GetTodos();
+        Task<Todo> GetTodo(int id);
+        Task<Todo> AddTodo(TodoInput input);
+    }
+}
+```
+### Create Repository
+in `Services/TodoRepository.cs`
+```cs
+
+```
+### Create Controller
 in `Controllers/TodosController.cs`
 ```cs
 
