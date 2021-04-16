@@ -1,4 +1,4 @@
-# GraphQL (Advanced)
+# GraphQL (Advanced - Hot Chocolate)
 [auth with graphql and identity](https://chillicream.com/docs/hotchocolate/v10/security/)
 * Connect to db
 * Install packages
