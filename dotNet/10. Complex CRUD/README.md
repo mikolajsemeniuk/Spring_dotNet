@@ -1,8 +1,17 @@
 # Complex CRUD
+* Add AutoMapper
 * Create Models
 * Configure DataContext
 * Create migration
 
+### Add AutoMapper
+```sh
+AutoMapper.Extensions.Microsoft.DependencyInjection
+```
+in `Helpers/AutoMapperProfiles.cs`
+```cs
+
+```
 ### Create Models
 in `Models/User.cs`
 ```cs
