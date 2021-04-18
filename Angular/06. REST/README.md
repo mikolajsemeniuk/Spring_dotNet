@@ -1,9 +1,12 @@
 # Rest
+* Info
 * Add module
 * Create models
 * Create service
 * Create component
 
+### Info
+**API has to return exact same object to allow changing view without refreshing**
 ### Add module
 in `src/app/app.module.ts`
 ```ts
@@ -105,6 +108,7 @@ export class TodoService {
         tap((todo: TodoPayload) => {
           const values: TodoPayload[] = [...this.values$.value, todo]
           this.values$.next(values)
+          return todo
         })
       )
   }
@@ -117,10 +121,25 @@ export class TodoService {
           const valueIndex: number = values.findIndex((item: TodoPayload) => item.id === item.id)
           values[valueIndex] = todo
           this.values$.next(values)
+          return todo
         })
       )
   }
 
+  // this method could be also:
+  // 
+  //     removeTodo(id: number): Observable<null> {
+  //       return this.http.delete<null>(`${environment.apiUrl}/${this.todo}/${id}`)
+  //         .pipe(
+  //           tap(_ => {
+  //             const values: TodoPayload[] = this.values$.value.filter(value => value.id !== id)
+  //             this.values$.next(values)
+  //           })
+  //         )
+  //     }
+  //
+  // However api returns deleted object
+  // that's why we type `TodoPayload` instead of `null`
   removeTodo(id: number): Observable<TodoPayload> {
     return this.http.delete<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
       .pipe(
@@ -131,6 +150,7 @@ export class TodoService {
       )
   }
 }
+
 ```
 ### Create component
 ```sh
