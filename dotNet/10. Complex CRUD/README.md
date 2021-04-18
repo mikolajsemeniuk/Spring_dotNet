@@ -1,16 +1,15 @@
 # Complex CRUD
-* Add AutoMapper
+* Install AutoMapper
 * Create Models
 * Configure DataContext
 * Create migration
+* Add Inputs and Payloads
+* Add AutoMapper
 
-### Add AutoMapper
+### Install AutoMapper
+Install AutoMapper
 ```sh
-AutoMapper.Extensions.Microsoft.DependencyInjection
-```
-in `Helpers/AutoMapperProfiles.cs`
-```cs
-
+dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection -v 8.1.1
 ```
 ### Create Models
 in `Models/User.cs`
@@ -109,4 +108,14 @@ namespace test.Data
 dotnet ef database drop
 dotnet ef migrations add Books
 dotnet ef database update
+```
+### Add Inputs and Payloads
+```cs
+
+```
+
+### Add AutoMapper
+in `Helpers/AutoMapperProfiles.cs`
+```cs
+
 ```
