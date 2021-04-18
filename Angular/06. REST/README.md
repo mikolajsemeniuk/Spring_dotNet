@@ -327,17 +327,29 @@ export class TodoComponent implements OnInit {
 
   addTodo(todo: TodoInput = { title: "linux", description: "lorem ipsum", isDone: false }): void {
     this.service.addTodo(todo)
-      .subscribe(_ => this.getTodos())
+      .subscribe(
+        _ => this.getTodos(),
+        err => {},
+        () => {}
+      )
   }
 
   setTodo(id: number = 5, todo: TodoInput = { title: "linux 2", description: "lorem ipsum 2", isDone: true }): void {
     this.service.setTodo(id, todo)
-      .subscribe(_ => this.getTodos())
+      .subscribe(
+        _ => this.getTodos(),
+        err => { },
+        () => { }
+      )
   }
 
   removeTodo(id: number = 5) {
     this.service.removeTodo(id)
-      .subscribe(_ => this.getTodos())
+      .subscribe(
+        _ => this.getTodos(),
+        err => { },
+        () => { }
+      )
   }
 }
 ```
