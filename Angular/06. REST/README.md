@@ -329,8 +329,8 @@ export class TodoComponent implements OnInit {
     this.service.addTodo(todo)
       .subscribe(
         _ => this.getTodos(),
-        err => {},
-        () => {}
+        err => { },
+        () => { }
       )
   }
 
