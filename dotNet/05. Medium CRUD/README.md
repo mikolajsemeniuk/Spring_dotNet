@@ -2,8 +2,11 @@
 * Create Model
 * Modify DbContext
 * Create migration and update db
-* Create Input
+* Create Input and Payload
 * Create Interface
+* Create Repository
+* Register service
+* Create Controller
 
 ### Create Model
 in `Models/Todo.cs`
@@ -85,22 +88,20 @@ namespace test.DTO
 ### Create Interface
 in `Interfaces/ITodoRepository.cs`
 ```cs
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using test.DTO;
-using test.Models;
 
 namespace test.Interfaces
 {
     public interface ITodoRepository
     {
-        Task<IEnumerable<Todo>> GetTodosAsync();
-        Task<Todo> GetTodoAsync(int id);
-        Task<Todo> AddTodoAsync(TodoInput input);
-        Task<Todo> SetTodoAsync(int id, TodoInput input);
-        Task<Todo> DeleteTodoAsync(int id);
-        Task<Boolean> SaveAllAsync();
+        Task<IEnumerable<TodoPayload>> GetTodosAsync();
+        Task<TodoPayload> GetTodoAsync(int id);
+        Task<TodoPayload> AddTodoAsync(TodoInput input);
+        Task<TodoPayload> SetTodoAsync(int id, TodoInput input);
+        Task<TodoPayload> RemoveTodoAsync(int id);
+        Task CheckIfAllSavedAsync(); 
     }
 }
 ```
@@ -109,6 +110,7 @@ in `Services/TodoRepository.cs`
 ```cs
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using test.Data;
@@ -122,61 +124,61 @@ namespace test.Services
     {
         private readonly DataContext _context;
 
-        public TodoRepository(DataContext context)
-        {
+        public TodoRepository(DataContext context) =>
             _context = context;
-        }
-        public async Task<IEnumerable<Todo>> GetTodosAsync()
-        {
-            return await _context.Todos.ToListAsync();
-        }
+            
+        public async Task<IEnumerable<TodoPayload>> GetTodosAsync() =>
+            await _context.Todos
+                .Select(todo => new TodoPayload { Id = todo.Id, Title = todo.Title, Description = todo.Description, Created = todo.Created, Updated = todo.Updated, IsDone = todo.IsDone })
+                .ToListAsync();
 
-        public async Task<Todo> GetTodoAsync(int id)
-        {
-            var todo = await _context.Todos.FindAsync(id);
-            if (todo == null)
-                throw new Exception("Could not find an item with this id");
-            return todo;
-        }
+        public async Task<TodoPayload> GetTodoAsync(int id) =>
+            await _context.Todos
+                .Where(todo => todo.Id == id)
+                .Select(todo => new TodoPayload { Id = todo.Id, Title = todo.Title, Description = todo.Description, Created = todo.Created, Updated = todo.Updated, IsDone = todo.IsDone })
+                .SingleAsync();
 
-        public async Task<Todo> AddTodoAsync(TodoInput input)
+        public async Task<TodoPayload> AddTodoAsync(TodoInput input)
         {
-            var todo = new Todo 
-            {
-                Title = input.Title,
-                Description = input.Description,
-                IsDone = input.IsDone
-            };
+            var todo = new Todo { Title = input.Title, Description = input.Description, IsDone = input.IsDone };
             await _context.Todos.AddAsync(todo);
-            return todo;
+            await CheckIfAllSavedAsync();
+            return new TodoPayload 
+                { Id = todo.Id, Title = todo.Title, Description = todo.Description, Created = todo.Created, Updated = todo.Updated, IsDone = todo.IsDone };
         }
 
-        public async Task<Todo> SetTodoAsync(int id, TodoInput input)
+        public async Task<TodoPayload> SetTodoAsync(int id, TodoInput input)
         {
             var todo = await _context.Todos.FindAsync(id);
             if (todo == null)
-                throw new Exception("Could not find an item with this id");
+                throw new Exception("Could not find an item with id: " + id);
             todo.Title = input.Title;
             todo.Description = input.Description;
             todo.IsDone = input.IsDone;
             todo.Updated = DateTime.Now;
             _context.Todos.Update(todo);
-            return todo;
+            await CheckIfAllSavedAsync();
+            return new TodoPayload
+                { Id = todo.Id, Title = todo.Title, Description = todo.Description, Created = todo.Created, Updated = todo.Updated, IsDone = todo.IsDone };
         }
 
-        public async Task<Todo> DeleteTodoAsync(int id)
+        public async Task<TodoPayload> RemoveTodoAsync(int id)
         {
             var todo = await _context.Todos.FindAsync(id);
             if (todo == null)
-                throw new Exception("Could not find an item with this id");
+                throw new Exception("Could not find an item with id: " + id);
             _context.Todos.Remove(todo);
-            return todo;
+            await CheckIfAllSavedAsync();
+            return new TodoPayload
+                { Id = todo.Id, Title = todo.Title, Description = todo.Description, Created = todo.Created, Updated = todo.Updated, IsDone = todo.IsDone };
         }
 
-        public async Task<bool> SaveAllAsync()
+        public async Task CheckIfAllSavedAsync()
         {
-            return await _context.SaveChangesAsync() > 0;
+            if (!(await _context.SaveChangesAsync() > 0))
+                throw new Exception("something gone wrong");
         }
+
     }
 }
 ```
@@ -191,68 +193,44 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 ### Create Controller
-in `Controllers/TodosController.cs`
+in `Controllers/TodoController.cs`
 ```cs
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using test.Data;
 using test.DTO;
 using test.Interfaces;
-using test.Models;
 
 namespace test.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TodosController : ControllerBase
+    public class TodoController : ControllerBase
     {
-        private readonly DataContext _context;
         private ITodoRepository _repository;
 
-        public TodosController(DataContext context, ITodoRepository repository)
-        {
-            _context = context;
+        public TodoController(ITodoRepository repository) =>
             _repository = repository;
-        }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
-        {
-            return Ok(await _repository.GetTodosAsync());
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Todo>> GetTodo([FromRoute] int id)
-        {
-            return Ok(await _repository.GetTodoAsync(id));
-        }
+        public async Task<ActionResult<IEnumerable<TodoPayload>>> GetTodos() =>
+            Ok(await _repository.GetTodosAsync());
 
         [HttpPost]
-        public async Task<ActionResult<Todo>> AddTodo([FromBody] TodoInput input)
-        {
-            var todo = await _repository.AddTodoAsync(input);
-            if (!await _repository.SaveAllAsync())
-                return BadRequest("something gone wrong");
-            return Ok(todo);
-        }
+        public async Task<ActionResult<TodoPayload>> AddTodo([FromBody] TodoInput input) =>
+            Ok(await _repository.AddTodoAsync(input));
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TodoPayload>> GetTodo([FromRoute] int id) =>
+            Ok(await _repository.GetTodoAsync(id));
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Todo>> SetTodo([FromRoute] int id, [FromBody] TodoInput input)
-        {
-            var todo = await _repository.SetTodoAsync(id, input);
-            if (!await _repository.SaveAllAsync())
-                return BadRequest("something gone wrong");
-            return Ok(todo);
-        }
+        public async Task<ActionResult<TodoPayload>> SetTodo([FromRoute] int id, [FromBody] TodoInput input) =>
+            Ok(await _repository.SetTodoAsync(id, input));
+
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Todo>> DeleteTodo([FromRoute] int id)
-        {
-            var todo = await _repository.DeleteTodoAsync(id);
-            if (!await _repository.SaveAllAsync())
-                return BadRequest("something gone wrong");
-            return Ok(todo);
-        }
+        public async Task<ActionResult<TodoPayload>> DeleteTodo([FromRoute] int id) =>
+            Ok(await _repository.RemoveTodoAsync(id));
     }
 }
 ```
