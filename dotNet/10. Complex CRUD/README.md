@@ -469,7 +469,7 @@ namespace test.Services
                 //     Id = book.Id,
                 //     Title = book.Title,
                 //     Description = book.Description,
-                //     UserId = book.UserId,
+                //     UserId = book.UserId, // should be `User.FindFirst(ClaimTypes.NameIdentifier)?.Value`
                 //     Author = new AuthorPayload
                 //     {
                 //         Id = book.Author.Id,
@@ -485,24 +485,24 @@ namespace test.Services
 
         public async Task<BookPayload> GetBookAsync(int id) =>
             await _context.Books
-            //     .Where(book => book.Id == id)
-            //     .Include(book => book.Author)
-            //     .Select(book => new BookPayload
-            //     {
-            //         Id = book.Id,
-            //         Title = book.Title,
-            //         Description = book.Description,
-            //         UserId = book.UserId,
-            //         Author = new AuthorPayload
-            //         {
-            //             Id = book.Author.Id,
-            //             Name = book.Author.Name,
-            //             FullName = book.Author.FullName,
-            //             DateOfBirth = book.Author.DateOfBirth,
-            //             BookId = book.Author.BookId
-            //         }
-            //     })
-            //     .SingleAsync();
+                //     .Where(book => book.Id == id)
+                //     .Include(book => book.Author)
+                //     .Select(book => new BookPayload
+                //     {
+                //         Id = book.Id,
+                //         Title = book.Title,
+                //         Description = book.Description,
+                //         UserId = book.UserId, // should be `User.FindFirst(ClaimTypes.NameIdentifier)?.Value`
+                //         Author = new AuthorPayload
+                //         {
+                //             Id = book.Author.Id,
+                //             Name = book.Author.Name,
+                //             FullName = book.Author.FullName,
+                //             DateOfBirth = book.Author.DateOfBirth,
+                //             BookId = book.Author.BookId
+                //         }
+                //     })
+                //     .SingleAsync();
                 .Where(book => book.Id == id)
                 .ProjectTo<BookPayload>(_mapper.ConfigurationProvider)
                 .AsSingleQuery()
@@ -514,7 +514,7 @@ namespace test.Services
             // {
             //     Title = input.Title,
             //     Description = input.Description,
-            //     UserId = input.UserId,
+            //     UserId = input.UserId, // should be `User.FindFirst(ClaimTypes.NameIdentifier)?.Value`
             //     Author = new Author
             //     {
             //         Name = input.Author.Name,
@@ -557,7 +557,7 @@ namespace test.Services
 
             // book.Title = input.Title;
             // book.Description = input.Description;
-            // book.UserId = input.UserId;
+            // book.UserId = input.UserId; // should be `User.FindFirst(ClaimTypes.NameIdentifier)?.Value`
             _mapper.Map(input, book);
             
             var author = await _context.Authors.SingleAsync(author => author.BookId == id);
@@ -605,7 +605,7 @@ namespace test.Services
             //     Id = book.Id,
             //     Title = book.Title,
             //     Description = book.Description,
-            //     UserId = book.UserId,
+            //     UserId = book.UserId, // should be `User.FindFirst(ClaimTypes.NameIdentifier)?.Value`
             //     Author = new AuthorPayload
             //     {
             //         Id = author.Id,
