@@ -6,7 +6,7 @@
 * Create component
 
 ### Info
-**API has to return exact same object to allow changing view without refreshing**
+**API has to return exact same object and arrow function in `addTodo`, `setTodo` and `removeTodo` could return `TodoPayload object` but doesn't has to, to allow changing view without refreshing**
 ### Add module
 in `src/app/app.module.ts`
 ```ts
@@ -105,10 +105,10 @@ export class TodoService {
   addTodo(payload: TodoInput): Observable<TodoPayload> {
     return this.http.post<TodoPayload>(`${environment.apiUrl}/${this.todo}`, payload)
       .pipe(
-        tap((todo: TodoPayload) => {
+        tap((todo: TodoPayload): void => {
           const values: TodoPayload[] = [...this.values$.value, todo]
           this.values$.next(values)
-          return todo
+          // return todo // Could be here but doesn't has to
         })
       )
   }
@@ -116,18 +116,16 @@ export class TodoService {
   setTodo(id: number, payload: TodoInput): Observable<TodoPayload> {
     return this.http.put<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`, payload)
       .pipe(
-        tap((todo: TodoPayload) => {
+        tap((todo: TodoPayload): void => {
           const values: TodoPayload[] = [...this.values$.value]
           const valueIndex: number = values.findIndex((item: TodoPayload) => item.id === item.id)
           values[valueIndex] = todo
           this.values$.next(values)
-          return todo
+          // return todo // Could be here but doesn't has to
         })
       )
   }
 
-  // `removeTodo` doesn't need object
-  // to update the view so 
   // this method could be also:
   // 
   //     removeTodo(id: number): Observable<null> {
@@ -145,15 +143,14 @@ export class TodoService {
   removeTodo(id: number): Observable<TodoPayload> {
     return this.http.delete<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
       .pipe(
-        tap((todo: TodoPayload) => {
+        tap((todo: TodoPayload): void => {
           const values: TodoPayload[] = this.values$.value.filter(value => value.id !== id)
           this.values$.next(values)
-          return todo
+          // return todo // Could be here but doesn't has to
         })
       )
   }
 }
-
 ```
 ### Create component
 ```sh
