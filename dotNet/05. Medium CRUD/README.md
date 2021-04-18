@@ -46,7 +46,7 @@ dotnet ef database drop
 dotnet ef migrations add Todos
 dotnet ef database update
 ```
-### Create Input
+### Create Input and Payload
 in `DTO/TodoInput.cs`
 ```cs
 using System;
@@ -61,6 +61,23 @@ namespace test.DTO
         [Required]
         public string Description { get; set; }
         [Required]
+        public Boolean IsDone { get; set; }
+    }
+}
+```
+in `DTO/TodoPayload.cs`
+```cs
+using System;
+
+namespace test.DTO
+{
+    public class TodoPayload
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
         public Boolean IsDone { get; set; }
     }
 }
