@@ -92,7 +92,7 @@ export class TodoService {
   getTodos(): Observable<TodoPayload[]> {
     return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
       .pipe(
-        switchMap((todos: TodoPayload[]) => {
+        switchMap((todos: TodoPayload[]): BehaviorSubject<TodoPayload[]> => {
           this.values$.next(todos)
           return this.values$
         })
@@ -258,7 +258,7 @@ export class TodoService {
   getTodos(): Observable<TodoPayload[]> {
     return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
       .pipe(
-        switchMap((todos: TodoPayload[]) => {
+        switchMap((todos: TodoPayload[]): BehaviorSubject<TodoPayload[]> => {
           this.values$.next(todos)
           return this.values$
         })
