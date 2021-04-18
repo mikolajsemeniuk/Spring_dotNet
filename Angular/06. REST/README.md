@@ -126,6 +126,8 @@ export class TodoService {
       )
   }
 
+  // `removeTodo` doesn't need object
+  // to update the view so 
   // this method could be also:
   // 
   //     removeTodo(id: number): Observable<null> {
@@ -143,9 +145,10 @@ export class TodoService {
   removeTodo(id: number): Observable<TodoPayload> {
     return this.http.delete<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
       .pipe(
-        tap(_ => {
+        tap((todo: TodoPayload) => {
           const values: TodoPayload[] = this.values$.value.filter(value => value.id !== id)
           this.values$.next(values)
+          return todo
         })
       )
   }
