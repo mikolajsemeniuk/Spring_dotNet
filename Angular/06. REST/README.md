@@ -255,22 +255,20 @@ export class TodoService {
 
   constructor(private http: HttpClient) { }
 
-  getTodos(): Observable<TodoPayload[]> {
-    return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
+  getTodos = (): Observable<TodoPayload[]> =>
+    this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
       .pipe(
         switchMap((todos: TodoPayload[]): BehaviorSubject<TodoPayload[]> => {
           this.values$.next(todos)
           return this.values$
         })
       )
-  }
 
-  getTodo(id: number): Observable<TodoPayload> {
-    return this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
-  }
+  getTodo = (id: number): Observable<TodoPayload> =>
+    this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
 
-  addTodo(payload: TodoInput): Observable<TodoPayload> {
-    return this.http.post<TodoPayload>(`${environment.apiUrl}/${this.todo}`, payload)
+  addTodo = (payload: TodoInput): Observable<TodoPayload> =>
+    this.http.post<TodoPayload>(`${environment.apiUrl}/${this.todo}`, payload)
       .pipe(
         first(),
         tap((todo: TodoPayload): void => {
@@ -278,10 +276,9 @@ export class TodoService {
           this.values$.next(values)
         })
       )
-  }
 
-  setTodo(id: number, payload: TodoInput): Observable<TodoPayload> {
-    return this.http.put<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`, payload)
+  setTodo = (id: number, payload: TodoInput): Observable<TodoPayload> =>
+    this.http.put<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`, payload)
       .pipe(
         first(),
         tap((todo: TodoPayload): void => {
@@ -291,10 +288,9 @@ export class TodoService {
           this.values$.next(values)
         })
       )
-  }
 
-  removeTodo(id: number): Observable<TodoPayload> {
-    return this.http.delete<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
+  removeTodo = (id: number): Observable<TodoPayload> =>
+    this.http.delete<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
       .pipe(
         first(),
         tap((todo: TodoPayload): void => {
@@ -302,7 +298,6 @@ export class TodoService {
           this.values$.next(values)
         })
       )
-  }
 }
 ```
 in `src/app/services/todo.component.ts`
