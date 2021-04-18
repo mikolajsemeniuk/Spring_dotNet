@@ -250,7 +250,6 @@ import { TodoPayload } from '../models/todo-payload.model';
 })
 export class TodoService {
   private readonly todo: string = 'todo'
-
   private values$: BehaviorSubject<TodoPayload[]> = new BehaviorSubject<TodoPayload[]>([]);
 
   constructor(private http: HttpClient) { }
