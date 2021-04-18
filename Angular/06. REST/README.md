@@ -7,7 +7,7 @@
 * Better version
 
 ### Info
-**API has to return exact same object and arrow function in `addTodo`, `setTodo` and `removeTodo` could return `TodoPayload object` but doesn't has to, to allow changing view without refreshing**
+**API has to return exact same object and arrow function in `addTodo`, `setTodo` and `removeTodo` could return `TodoPayload object` but doesn't has to, to allow changing view without refreshing, all data types to return and sent were double checked.**
 ### Add module
 in `src/app/app.module.ts`
 ```ts
