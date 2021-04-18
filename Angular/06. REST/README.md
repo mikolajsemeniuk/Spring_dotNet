@@ -4,6 +4,7 @@
 * Create models
 * Create service
 * Create component
+* Better version
 
 ### Info
 **API has to return exact same object and arrow function in `addTodo`, `setTodo` and `removeTodo` could return `TodoPayload object` but doesn't has to, to allow changing view without refreshing**
@@ -233,3 +234,117 @@ in `src/app/services/todo.component.html`
     Loading. Please wait...
 </ng-template>
 ```
+### Better version
+in `src/app/services/todo.service.ts`
+```ts
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { TodoInput } from '../models/todo-input.model';
+import { first, switchMap, tap } from 'rxjs/operators'
+import { TodoPayload } from '../models/todo-payload.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TodoService {
+  private readonly todo: string = 'todo'
+
+  private values$: BehaviorSubject<TodoPayload[]> = new BehaviorSubject<TodoPayload[]>([]);
+
+  constructor(private http: HttpClient) { }
+
+  getTodos(): Observable<TodoPayload[]> {
+    return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
+      .pipe(
+        switchMap((todos: TodoPayload[]) => {
+          this.values$.next(todos)
+          return this.values$
+        })
+      )
+  }
+
+  getTodo(id: number): Observable<TodoPayload> {
+    return this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
+  }
+
+  addTodo(payload: TodoInput): Observable<TodoPayload> {
+    return this.http.post<TodoPayload>(`${environment.apiUrl}/${this.todo}`, payload)
+      .pipe(
+        first(),
+        tap((todo: TodoPayload): void => {
+          const values: TodoPayload[] = [...this.values$.value, todo]
+          this.values$.next(values)
+        })
+      )
+  }
+
+  setTodo(id: number, payload: TodoInput): Observable<TodoPayload> {
+    return this.http.put<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`, payload)
+      .pipe(
+        first(),
+        tap((todo: TodoPayload): void => {
+          const values: TodoPayload[] = [...this.values$.value]
+          const valueIndex: number = values.findIndex((item: TodoPayload) => item.id === item.id)
+          values[valueIndex] = todo
+          this.values$.next(values)
+        })
+      )
+  }
+
+  removeTodo(id: number): Observable<TodoPayload> {
+    return this.http.delete<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
+      .pipe(
+        first(),
+        tap((todo: TodoPayload): void => {
+          const values: TodoPayload[] = this.values$.value.filter(value => value.id !== id)
+          this.values$.next(values)
+        })
+      )
+  }
+}
+```
+in `src/app/services/todo.component.ts`
+```ts
+import { Component, OnInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
+import { TodoInput } from 'src/app/models/todo-input.model';
+import { TodoPayload } from 'src/app/models/todo-payload.model';
+import { TodoService } from 'src/app/services/todo.service';
+
+@Component({
+  selector: 'app-todo',
+  templateUrl: './todo.component.html',
+  styleUrls: ['./todo.component.scss']
+})
+export class TodoComponent implements OnInit {
+  todos$: Observable<TodoPayload[]> = new Observable();
+
+  constructor(private service: TodoService) { }
+
+  ngOnInit(): void {
+    this.getTodos()
+  }
+
+  getTodos(): void {
+    this.todos$ = this.service.getTodos()
+  }
+
+  addTodo(todo: TodoInput = { title: "linux", description: "lorem ipsum", isDone: false }): void {
+    this.service.addTodo(todo)
+      .subscribe(_ => this.getTodos())
+  }
+
+  setTodo(id: number = 5, todo: TodoInput = { title: "linux 2", description: "lorem ipsum 2", isDone: true }): void {
+    this.service.setTodo(id, todo)
+      .subscribe(_ => this.getTodos())
+  }
+
+  removeTodo(id: number = 5) {
+    this.service.removeTodo(id)
+      .subscribe(_ => this.getTodos())
+  }
+}
+```
+Rest the same
