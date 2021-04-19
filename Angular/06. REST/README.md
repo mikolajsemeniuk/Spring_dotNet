@@ -102,7 +102,7 @@ export class TodoService {
   }
 
   getTodo(id: number): Observable<TodoPayload> {
-    return this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
+    return this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`).pipe(first())
   }
 
   addTodo(payload: TodoInput): Observable<TodoPayload> {
@@ -271,7 +271,7 @@ export class TodoService {
   }
 
   getTodo = (id: number): Observable<TodoPayload> =>
-    this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
+    this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`).pipe(first())
 
   addTodo = (payload: TodoInput): Observable<TodoPayload> =>
     this.http.post<TodoPayload>(`${environment.apiUrl}/${this.todo}`, payload)
