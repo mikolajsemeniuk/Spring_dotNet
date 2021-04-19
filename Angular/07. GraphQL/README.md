@@ -9,6 +9,11 @@ in `shell`
 ```sh
 ng add apollo-angular # https://localhost:5001/graphql/
 ```
+### Create service
+in `shell`
+```sh
+ng g s services/todo-graphql --skipTests=true
+```
 ### Create component
 in `shell`
 ```sh
