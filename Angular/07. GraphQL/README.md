@@ -5,12 +5,12 @@
 
 
 ### Add module
-in terminal
+in `shell`
 ```sh
 ng add apollo-angular # https://localhost:5001/graphql/
 ```
 ### Create component
-in terminal
+in `shell`
 ```sh
 ng g c components/todo-graphql --skipTests=true --module ./modules/shared
 ```
