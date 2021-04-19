@@ -90,6 +90,9 @@ export class TodoService {
   constructor(private http: HttpClient) { }
 
   getTodos(): Observable<TodoPayload[]> {
+    if (this.values$.value) {
+      return this.values$.asObservable();
+    }
     return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
       .pipe(
         switchMap((todos: TodoPayload[]): BehaviorSubject<TodoPayload[]> => {
@@ -254,14 +257,18 @@ export class TodoService {
 
   constructor(private http: HttpClient) { }
 
-  getTodos = (): Observable<TodoPayload[]> =>
-    this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
+  getTodos(): Observable<TodoPayload[]> {
+    if (this.values$.value) {
+      return this.values$.asObservable();
+    }
+    return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
       .pipe(
         switchMap((todos: TodoPayload[]): BehaviorSubject<TodoPayload[]> => {
           this.values$.next(todos)
           return this.values$
         })
       )
+  }
 
   getTodo = (id: number): Observable<TodoPayload> =>
     this.http.get<TodoPayload>(`${environment.apiUrl}/${this.todo}/${id}`)
