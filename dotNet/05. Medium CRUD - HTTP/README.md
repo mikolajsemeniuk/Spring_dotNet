@@ -1,4 +1,4 @@
-# Medium CRUD
+# Medium CRUD - HTTP
 * Create Model
 * Modify DbContext
 * Create migration and update db
