@@ -82,17 +82,16 @@ import { TodoPayload } from '../models/todo-payload.model';
   providedIn: 'root'
 })
 export class TodoService {
-
   private readonly todo: string = 'todo'
-
   private values$: BehaviorSubject<TodoPayload[]> = new BehaviorSubject<TodoPayload[]>([]);
 
   constructor(private http: HttpClient) { }
 
-  getTodos(): Observable<TodoPayload[]> {
-    if (this.values$.value) {
+  getTodos(cache: boolean): Observable<TodoPayload[]> {
+    if (this.values$.value && cache) {
       return this.values$.asObservable();
     }
+    // { headers: new HttpHeaders().append('Content-Type', 'application/json'), withCredentials: true }
     return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
       .pipe(
         switchMap((todos: TodoPayload[]): BehaviorSubject<TodoPayload[]> => {
@@ -181,26 +180,26 @@ export class TodoComponent implements OnInit, OnDestroy {
   constructor(private service: TodoService) { }
 
   ngOnInit(): void {
-    this.getTodos()
+    this.getTodos(false)
   }
 
-  getTodos(): void {
+  getTodos(cache: boolean): void {
     this.todos$ = this.service.getTodos()
   }
 
   addTodo(todo: TodoInput = { title: "linux", description: "lorem ipsum", isDone: false }): void {
     this.subscription.add(this.service.addTodo(todo)
-      .subscribe(_ => this.getTodos()))
+      .subscribe(_ => this.getTodos(true)))
   }
 
   setTodo(id: number = 5, todo: TodoInput = { title: "linux 2", description: "lorem ipsum 2", isDone: true }): void {
     this.subscription.add(this.service.setTodo(id, todo)
-      .subscribe(_ => this.getTodos()))
+      .subscribe(_ => this.getTodos(true)))
   }
 
   removeTodo(id: number = 5) {
     this.subscription.add(this.service.removeTodo(id)
-      .subscribe(_ => this.getTodos()))
+      .subscribe(_ => this.getTodos(true)))
   }
 
   ngOnDestroy(): void {
@@ -240,7 +239,7 @@ in `src/app/services/todo.component.html`
 ### Better version
 in `src/app/services/todo.service.ts`
 ```ts
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -253,14 +252,15 @@ import { TodoPayload } from '../models/todo-payload.model';
 })
 export class TodoService {
   private readonly todo: string = 'todo'
-  private values$: BehaviorSubject<TodoPayload[]> = new BehaviorSubject<TodoPayload[]>([]);
+  private values$: BehaviorSubject<TodoPayload[]> = new BehaviorSubject<TodoPayload[]>([])
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getTodos(): Observable<TodoPayload[]> {
-    if (this.values$.value) {
+  getTodos(cache: boolean): Observable<TodoPayload[]> {
+    if (this.values$.value && cache) {
       return this.values$.asObservable();
     }
+    // { headers: new HttpHeaders().append('Content-Type', 'application/json'), withCredentials: true }
     return this.http.get<TodoPayload[]>(`${environment.apiUrl}/${this.todo}`)
       .pipe(
         switchMap((todos: TodoPayload[]): BehaviorSubject<TodoPayload[]> => {
@@ -325,26 +325,26 @@ export class TodoComponent implements OnInit {
   constructor(private service: TodoService) { }
 
   ngOnInit(): void {
-    this.getTodos()
+    this.getTodos(false)
   }
 
-  getTodos(): void {
-    this.todos$ = this.service.getTodos()
+  getTodos(cache: boolean): void {
+    this.todos$ = this.service.getTodos(cache)
   }
 
   addTodo(todo: TodoInput = { title: "linux", description: "lorem ipsum", isDone: false }): void {
     this.service.addTodo(todo)
       .subscribe(
-        _ => this.getTodos(),
-        err => { },
-        () => { }
+        _ => this.getTodos(true),
+        err => {},
+        () => {}
       )
   }
 
   setTodo(id: number = 5, todo: TodoInput = { title: "linux 2", description: "lorem ipsum 2", isDone: true }): void {
     this.service.setTodo(id, todo)
       .subscribe(
-        _ => this.getTodos(),
+        _ => this.getTodos(true),
         err => { },
         () => { }
       )
@@ -353,7 +353,7 @@ export class TodoComponent implements OnInit {
   removeTodo(id: number = 5) {
     this.service.removeTodo(id)
       .subscribe(
-        _ => this.getTodos(),
+        _ => this.getTodos(true),
         err => { },
         () => { }
       )
