@@ -20,3 +20,7 @@ change `app.module.ts`
 ```sh
 ng generate reducer store/Todo --reducers index.ts --flat false --skipTests=true
 ```
+### create selector
+```sh
+ng generate selector store/Todo --flat false --skipTests=true
+```
