@@ -204,3 +204,9 @@ Additional: `tsconfig.json`
   }
 }
 ```
+
+
+```sh
+ng generate store State --root --state-path store --module app.module.ts 
+ng generate reducer store/Todo --skipTests=true --flat false --reducers index.ts
+```
