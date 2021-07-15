@@ -7,4 +7,7 @@ get image of rabbitmq
 #docker run -p 15672:15672 -p 5672:5672 --name rabbit-corona rabbitmq:3-management
 
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+
+# for Seed.cs
+# dotnet ef migrations add InitialIdentityCoreDbMigration -c DataContext -o Data/Migrations/IdentityServer/IdentityCoreDb
 ```
